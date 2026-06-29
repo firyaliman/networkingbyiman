@@ -1,340 +1,1567 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Network Security Portfolio</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio — Network & Security Projects</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Design Tokens ─── */
+    :root {
+      --bg:       #0b0f1a;
+      --surface:  #111827;
+      --card:     #161d2e;
+      --border:   #1e2d45;
+      --accent:   #38bdf8;
+      --accent2:  #818cf8;
+      --success:  #34d399;
+      --warn:     #fbbf24;
+      --text:     #e2e8f0;
+      --muted:    #64748b;
+      --dim:      #334155;
+      --mono:     'JetBrains Mono', monospace;
+      --sans:     'Inter', sans-serif;
+      --radius:   10px;
+      --transition: 0.22s ease;
+    }
 
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Segoe UI, sans-serif;
-}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-body{
-    background:#0b1220;
-    color:#e5e7eb;
-    line-height:1.6;
-}
+    html { scroll-behavior: smooth; }
 
-header{
-    background:#0f172a;
-    padding:40px;
-    text-align:center;
-    border-bottom:1px solid #1f2937;
-}
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.65;
+      min-height: 100vh;
+    }
 
-header h1{
-    font-size:2.5rem;
-    color:#60a5fa;
-}
+    /* ─── Packet-flow header bar (signature element) ─── */
+    .packet-bar {
+      height: 3px;
+      background: var(--border);
+      overflow: hidden;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 999;
+    }
+    .packet-bar::after {
+      content: '';
+      display: block;
+      height: 100%;
+      width: 40%;
+      background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+      animation: packet-flow 2.4s linear infinite;
+    }
+    @keyframes packet-flow {
+      from { transform: translateX(-100%); }
+      to   { transform: translateX(350%); }
+    }
 
-header p{
-    opacity:0.8;
-    margin-top:10px;
-}
+    /* ─── Nav ─── */
+    nav {
+      position: sticky;
+      top: 3px;
+      background: rgba(11,15,26,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+    }
+    .nav-inner {
+      max-width: 1100px;
+      margin: auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+    }
+    .nav-logo span { color: var(--muted); }
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      transition: color var(--transition);
+    }
+    .nav-links a:hover { color: var(--text); }
 
-nav{
-    margin-top:20px;
-}
+    /* ─── Layout ─── */
+    .page { max-width: 1100px; margin: auto; padding: 0 24px; }
 
-nav a{
-    color:#e5e7eb;
-    margin:0 15px;
-    text-decoration:none;
-    font-weight:500;
-}
+    section { padding: 72px 0; }
+    section + section { border-top: 1px solid var(--border); }
 
-section{
-    max-width:1100px;
-    margin:auto;
-    padding:60px 20px;
-}
+    /* ─── Hero ─── */
+    #hero {
+      padding: 80px 0 64px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 40px;
+      align-items: center;
+    }
+    .hero-eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .hero-name {
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+    .hero-name em {
+      font-style: normal;
+      color: var(--accent);
+    }
+    .hero-desc {
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 480px;
+      line-height: 1.75;
+    }
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 24px;
+    }
+    .tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: var(--surface);
+    }
+    .tag.ospf  { border-color: #38bdf840; color: var(--accent); background: #38bdf810; }
+    .tag.bgp   { border-color: #818cf840; color: var(--accent2); background: #818cf810; }
+    .tag.sec   { border-color: #34d39940; color: var(--success); background: #34d39910; }
+    .tag.vlan  { border-color: #fbbf2440; color: var(--warn); background: #fbbf2410; }
 
-.section-title{
-    font-size:1.8rem;
-    margin-bottom:20px;
-    color:#60a5fa;
-}
+    .hero-stat-block {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .hero-stat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      min-width: 160px;
+      text-align: center;
+    }
+    .hero-stat .num {
+      font-family: var(--mono);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .hero-stat .lbl {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+      letter-spacing: 0.05em;
+    }
 
-/* Cards */
-.card{
-    background:#111827;
-    border:1px solid #1f2937;
-    border-radius:12px;
-    padding:20px;
-    margin-bottom:20px;
-}
+    /* ─── Section headers ─── */
+    .section-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+    .section-sub {
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 520px;
+      margin-bottom: 40px;
+    }
 
-/* PROJECT ACCORDION */
-.project-header{
-    width:100%;
-    text-align:left;
-    padding:15px;
-    background:#1f2937;
-    border:none;
-    color:white;
-    font-size:1.1rem;
-    cursor:pointer;
-    border-radius:8px;
-    margin-top:10px;
-}
+    /* ─── Projects Layout: sidebar + pane ─── */
+    .projects-layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
 
-.project-content{
-    display:none;
-    padding:15px;
-    background:#0f172a;
-    border-radius:10px;
-    margin-top:10px;
-    border:1px solid #1f2937;
-}
+    .cat-sidebar {
+      position: sticky;
+      top: 72px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
 
-/* TABS */
-.tabs{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    margin-bottom:15px;
-}
+    .cat-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background var(--transition), border-color var(--transition);
+      user-select: none;
+    }
+    .cat-item:hover { background: var(--surface); }
+    .cat-item.active {
+      background: var(--card);
+      border-color: var(--accent);
+    }
+    .cat-icon { font-size: 20px; flex-shrink: 0; }
+    .cat-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      line-height: 1.3;
+    }
+    .cat-item.active .cat-name { color: var(--text); }
+    .cat-count {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--dim);
+      margin-top: 2px;
+    }
+    .cat-item.active .cat-count { color: var(--accent); }
+    .cat-divider { height: 1px; background: var(--border); margin: 4px 0; }
 
-.tab-btn{
-    padding:8px 12px;
-    border:none;
-    cursor:pointer;
-    border-radius:6px;
-    background:#1f2937;
-    color:white;
-    font-size:0.9rem;
-}
+    .projects-pane { display: flex; flex-direction: column; gap: 16px; }
+    .cat-group { display: none; flex-direction: column; gap: 16px; }
+    .cat-group.active { display: flex; }
 
-.tab-btn.active{
-    background:#2563eb;
-}
+    /* mobile pill tabs */
+    .cat-pill-tabs {
+      display: none;
+      overflow-x: auto;
+      scrollbar-width: none;
+      gap: 8px;
+      padding-bottom: 4px;
+      margin-bottom: 16px;
+    }
+    .cat-pill-tabs::-webkit-scrollbar { display: none; }
+    .cat-pill {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      padding: 7px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all var(--transition);
+      flex-shrink: 0;
+    }
+    .cat-pill.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #000;
+    }
 
-.tab-content{
-    display:none;
-    padding:15px;
-    background:#111827;
-    border-radius:8px;
-    border:1px solid #1f2937;
-}
+    /* ─── Project Cards ─── */
 
-.tab-content.active{
-    display:block;
-}
+    .project-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color var(--transition);
+    }
+    .project-card:hover { border-color: var(--accent); }
 
-/* SKILLS */
-.skills{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-    gap:15px;
-}
+    /* card header */
+    .project-header {
+      padding: 20px 24px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .project-meta { flex: 1; }
+    .project-eyebrow {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .project-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 8px;
+      line-height: 1.35;
+    }
+    .project-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .badge {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+    .badge-blue   { background: #38bdf820; color: var(--accent);  border: 1px solid #38bdf840; }
+    .badge-purple { background: #818cf820; color: var(--accent2); border: 1px solid #818cf840; }
+    .badge-green  { background: #34d39920; color: var(--success); border: 1px solid #34d39940; }
+    .badge-amber  { background: #fbbf2420; color: var(--warn);    border: 1px solid #fbbf2440; }
+    .badge-red    { background: #f8717120; color: #f87171;        border: 1px solid #f8717140; }
 
-.skill{
-    background:#111827;
-    padding:15px;
-    border-radius:10px;
-    border:1px solid #1f2937;
-}
+    .project-toggle {
+      font-size: 20px;
+      color: var(--muted);
+      transition: transform var(--transition), color var(--transition);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .project-card.open .project-toggle {
+      transform: rotate(180deg);
+      color: var(--accent);
+    }
 
-/* CONTACT */
-footer{
-    text-align:center;
-    padding:30px;
-    background:#0f172a;
-    border-top:1px solid #1f2937;
-    margin-top:40px;
-}
-</style>
+    /* tab system */
+    .project-body { display: none; border-top: 1px solid var(--border); }
+    .project-card.open .project-body { display: block; }
+
+    .tab-bar {
+      display: flex;
+      overflow-x: auto;
+      scrollbar-width: none;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+    }
+    .tab-bar::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 12px 16px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color var(--transition), border-color var(--transition);
+      text-transform: uppercase;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab-content { display: none; padding: 28px 24px; }
+    .tab-content.active { display: block; }
+
+    /* ─── Tab content styles ─── */
+    .content-block { margin-bottom: 24px; }
+    .content-block:last-child { margin-bottom: 0; }
+
+    .content-block h4 {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .content-block p {
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    /* problem/solution callout */
+    .callout {
+      background: var(--surface);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 14px 18px;
+      font-size: 14px;
+      color: #94a3b8;
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+    .callout.warn  { border-color: var(--warn); }
+    .callout.success { border-color: var(--success); }
+    .callout.purple  { border-color: var(--accent2); }
+
+    /* topology / diagram placeholder */
+    .topo-placeholder {
+      background: var(--surface);
+      border: 1px dashed var(--dim);
+      border-radius: var(--radius);
+      padding: 32px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .topo-placeholder .topo-icon { font-size: 36px; margin-bottom: 10px; }
+    .topo-placeholder .topo-label { font-family: var(--mono); font-size: 11px; color: var(--dim); margin-top: 6px; }
+
+    /* steps list */
+    .steps { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .steps li {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      font-size: 14px;
+      color: #94a3b8;
+    }
+    .step-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      background: #38bdf815;
+      border: 1px solid #38bdf830;
+      border-radius: 4px;
+      padding: 2px 7px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* output result rows */
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 4px;
+    }
+    .result-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+    }
+    .result-item .r-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+    .result-item .r-val {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--success);
+    }
+    .result-item .r-val.warn { color: var(--warn); }
+    .result-item .r-val.blue { color: var(--accent); }
+
+    /* code snippet */
+    .code-block {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: #7dd3fc;
+      overflow-x: auto;
+      line-height: 1.7;
+      margin-top: 8px;
+    }
+    .code-block .kw  { color: #c084fc; }
+    .code-block .cm  { color: #475569; }
+    .code-block .str { color: #86efac; }
+
+    /* ─── Lightbox ─── */
+    .topo-img {
+      width: 100%;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      cursor: zoom-in;
+      display: block;
+      transition: border-color var(--transition), opacity var(--transition);
+    }
+    .topo-img:hover { border-color: var(--accent); opacity: 0.9; }
+
+    .img-hint {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 8px;
+      letter-spacing: 0.06em;
+    }
+
+    #lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.88);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      cursor: zoom-out;
+      backdrop-filter: blur(6px);
+      animation: lb-in 0.18s ease;
+    }
+    #lightbox.active { display: flex; }
+    @keyframes lb-in {
+      from { opacity: 0; transform: scale(0.97); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    #lightbox img {
+      max-width: 100%;
+      max-height: 90vh;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+    }
+    #lightbox-close {
+      position: fixed;
+      top: 20px;
+      right: 24px;
+      font-size: 28px;
+      color: var(--muted);
+      cursor: pointer;
+      line-height: 1;
+      transition: color var(--transition);
+      background: none;
+      border: none;
+    }
+    #lightbox-close:hover { color: #fff; }
+    #lightbox-caption {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+    }
+
+    /* ─── Achievements ─── */
+    .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .achievement-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 24px;
+      transition: border-color var(--transition);
+    }
+    .achievement-card:hover { border-color: var(--accent2); }
+    .ach-icon { font-size: 28px; margin-bottom: 14px; }
+    .ach-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .ach-year {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .ach-desc {
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.7;
+    }
+
+    /* ─── About / Contact ─── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+    .about-text { color: #94a3b8; font-size: 14px; line-height: 1.8; }
+    .about-text p + p { margin-top: 14px; }
+    .contact-links { display: flex; flex-direction: column; gap: 12px; }
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 14px;
+      transition: border-color var(--transition), color var(--transition);
+    }
+    .contact-link:hover { border-color: var(--accent); color: var(--text); }
+    .contact-link .cl-icon { font-size: 18px; }
+    .contact-link .cl-label { font-size: 11px; font-family: var(--mono); color: var(--dim); }
+
+    /* ─── Footer ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 24px;
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--dim);
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 720px) {
+      #hero { grid-template-columns: 1fr; }
+      .hero-stat-block { flex-direction: row; }
+      .about-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+
+      /* Projects: hide sidebar, show pill tabs */
+      .projects-layout { grid-template-columns: 1fr; }
+      .cat-sidebar { display: none; }
+      .cat-pill-tabs { display: flex; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .packet-bar::after { animation: none; background: var(--accent); }
+    }
+  </style>
 </head>
-
 <body>
 
-<header>
-    <h1>Iman</h1>
-    <p>Network Engineer | Network Security Enthusiast</p>
+<!-- packet-flow signature bar -->
+<div class="packet-bar"></div>
 
-    <nav>
-        <a href="#about">About</a>
-        <a href="#skills">Skills</a>
-        <a href="#projects">Projects</a>
-        <a href="#leadership">Leadership</a>
-        <a href="#contact">Contact</a>
-    </nav>
-</header>
+<!-- ─── NAV ─── -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo"><span>~/</span>portfolio<span>.net</span></div>
+    <ul class="nav-links">
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#achievements">Achievements</a></li>
+      <li><a href="#about">About</a></li>
+    </ul>
+  </div>
+</nav>
 
-<!-- ABOUT -->
-<section id="about">
-    <h2 class="section-title">About Me</h2>
-    <div class="card">
-        Telecommunication Engineering Technology graduate passionate about
-        network engineering and cybersecurity. Focused on building secure,
-        scalable enterprise networks using Cisco technologies and real-world
-        network security practices.
+<!-- ─── HERO ─── -->
+<div class="page">
+  <div id="hero">
+    <div>
+      <div class="hero-eyebrow">// Network & Security Engineer</div>
+      <h1 class="hero-name">Your Name<br><em>Here.</em></h1>
+      <p class="hero-desc">
+        Computer Networking student with hands-on experience in enterprise routing, WAN design, and network security. These are real labs and case studies built from the ground up.
+      </p>
+      <div class="hero-tags">
+        <span class="tag ospf">OSPF</span>
+        <span class="tag bgp">eBGP</span>
+        <span class="tag vlan">VLAN</span>
+        <span class="tag sec">ACL</span>
+        <span class="tag sec">Firewall</span>
+        <span class="tag">Cisco Packet Tracer</span>
+        <span class="tag">WAN</span>
+      </div>
     </div>
-</section>
-
-<!-- SKILLS -->
-<section id="skills">
-    <h2 class="section-title">Technical Skills</h2>
-
-    <div class="skills">
-        <div class="skill">VLAN / Inter-VLAN Routing</div>
-        <div class="skill">OSPF / Static Routing</div>
-        <div class="skill">ACL (Standard & Extended)</div>
-        <div class="skill">SSH Secure Management</div>
-        <div class="skill">Port Security</div>
-        <div class="skill">DHCP Snooping</div>
-        <div class="skill">Dynamic ARP Inspection</div>
-        <div class="skill">Cisco Packet Tracer / GNS3</div>
+    <div class="hero-stat-block">
+      <div class="hero-stat">
+        <div class="num" id="stat-projects">0</div>
+        <div class="lbl">Lab Projects</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num">2A</div>
+        <div class="lbl">Latest Project</div>
+      </div>
     </div>
-</section>
+  </div>
+</div>
 
-<!-- PROJECTS -->
-<section id="projects">
-    <h2 class="section-title">Projects</h2>
+<!-- ─── PROJECTS ─── -->
+<div class="page">
+  <section id="projects">
+    <div class="section-label">// Case Studies</div>
+    <h2 class="section-title">Network Projects</h2>
+    <p class="section-sub">Select a focus area on the left, then expand any project to walk through it tab by tab.</p>
 
-    <!-- PROJECT 1 -->
-    <button class="project-header" onclick="toggleProject('p1')">
-        Enterprise WAN Security Lab
-    </button>
-
-    <div class="project-content" id="p1">
-
-        <div class="tabs">
-
-            <button class="tab-btn active" onclick="openTab(event,'p1b1')">Background</button>
-            <button class="tab-btn" onclick="openTab(event,'p1b2')">Problem</button>
-            <button class="tab-btn" onclick="openTab(event,'p1b3')">Topology</button>
-            <button class="tab-btn" onclick="openTab(event,'p1b4')">Solution</button>
-            <button class="tab-btn" onclick="openTab(event,'p1b5')">Testing</button>
-            <button class="tab-btn" onclick="openTab(event,'p1b6')">Results</button>
-
-        </div>
-
-        <div id="p1b1" class="tab-content active">
-            ABC Corporation operates HQ and branch offices requiring secure WAN connectivity.
-        </div>
-
-        <div id="p1b2" class="tab-content">
-            - No segmentation<br>
-            - Unauthorized access between departments<br>
-            - No secure remote management
-        </div>
-
-        <div id="p1b3" class="tab-content">
-            <p>Insert topology image here</p>
-        </div>
-
-        <div id="p1b4" class="tab-content">
-            VLANs, ACLs, SSH, DHCP Snooping, DAI implemented for security hardening.
-        </div>
-
-        <div id="p1b5" class="tab-content">
-            Ping tests, VLAN isolation tests, DHCP spoofing prevention verified.
-        </div>
-
-        <div id="p1b6" class="tab-content">
-            Secure multi-site network successfully implemented and validated.
-        </div>
-
+    <!-- mobile pill tabs (visible only on small screens) -->
+    <div class="cat-pill-tabs" id="cat-pills">
+      <button class="cat-pill active" onclick="selectCategory('lan')">🖧 LAN & Switching</button>
+      <button class="cat-pill" onclick="selectCategory('wan')">🌐 Routing & WAN</button>
+      <button class="cat-pill" onclick="selectCategory('sec')">🔒 Network Security</button>
+      <button class="cat-pill" onclick="selectCategory('mon')">💻 Network Monitoring & Automation</button>
+      <button class="cat-pill" onclick="selectCategory('anal')">🚦 Traffic Analysis/button>
     </div>
 
-    <!-- PROJECT 2 -->
-    <button class="project-header" onclick="toggleProject('p2')">
-        Router-on-a-Stick Lab
-    </button>
+    <div class="projects-layout">
 
-    <div class="project-content" id="p2">
-
-        <div class="tabs">
-            <button class="tab-btn active" onclick="openTab(event,'p2b1')">Background</button>
-            <button class="tab-btn" onclick="openTab(event,'p2b2')">Problem</button>
-            <button class="tab-btn" onclick="openTab(event,'p2b3')">Topology</button>
-            <button class="tab-btn" onclick="openTab(event,'p2b4')">Solution</button>
-            <button class="tab-btn" onclick="openTab(event,'p2b5')">Testing</button>
-            <button class="tab-btn" onclick="openTab(event,'p2b6')">Results</button>
+      <!-- ── Sidebar ── -->
+      <aside class="cat-sidebar">
+        <div class="cat-item active" onclick="selectCategory('lan')" data-cat="lan">
+          <div class="cat-icon">🖧</div>
+          <div class="cat-info">
+            <div class="cat-name">LAN Design &amp; Switching</div>
+            <div class="cat-count" id="count-lan"></div>
+          </div>
         </div>
-
-        <div id="p2b1" class="tab-content active">
-            Implemented Inter-VLAN routing using router-on-a-stick configuration.
+        <div class="cat-item" onclick="selectCategory('wan')" data-cat="wan">
+          <div class="cat-icon">🌐</div>
+          <div class="cat-info">
+            <div class="cat-name">Routing &amp; WAN</div>
+            <div class="cat-count" id="count-wan"></div>
+          </div>
         </div>
-
-        <div id="p2b2" class="tab-content">
-            VLANs required communication but isolation at Layer 2.
+        <div class="cat-item" onclick="selectCategory('sec')" data-cat="sec">
+          <div class="cat-icon">🔒</div>
+          <div class="cat-info">
+            <div class="cat-name">Network Security</div>
+            <div class="cat-count" id="count-sec"></div>
+          </div>
+        </div>       
+        <div class="cat-item" onclick="selectCategory('mon')" data-cat="mon">
+          <div class="cat-icon">💻</div>
+          <div class="cat-info">
+            <div class="cat-name">Network Monitoring &amp; Automation</div>
+            <div class="cat-count" id="count-mon"></div>
+          </div>
+        </div>       
+        <div class="cat-item" onclick="selectCategory('anal')" data-cat="anal">
+          <div class="cat-icon">🚦</div>
+          <div class="cat-info">
+            <div class="cat-name">Traffic Analysis</div>
+            <div class="cat-count" id="count-anal"></div>
+          </div>
         </div>
+      </aside>
 
-        <div id="p2b3" class="tab-content">
-            Topology diagram here.
-        </div>
+      <!-- ── Project list ── -->
+      <div class="projects-pane">
 
-        <div id="p2b4" class="tab-content">
-            Subinterfaces configured for VLAN routing.
-        </div>
+        <!-- ══ LAN CATEGORY ══ -->
+        <div class="cat-group active" data-cat="lan">
 
-        <div id="p2b5" class="tab-content">
-            Verified connectivity between VLANs.
-        </div>
+          <div class="project-card" id="proj1">
+            <div class="project-header" onclick="toggleProject('proj1')">
+              <div class="project-meta">
+                <div class="project-eyebrow">Project 1A &amp; 1B · VLAN &amp; Inter-VLAN Routing</div>
+                <div class="project-title">Enterprise Office VLAN Segmentation</div>
+                <div class="project-badges">
+                  <span class="badge badge-blue">VLAN</span>
+                  <span class="badge badge-amber">Trunking</span>
+                  <span class="badge badge-green">Inter-VLAN</span>
+                  <span class="badge badge-purple">Cisco PT</span>
+                </div>
+              </div>
+              <div class="project-toggle">⌄</div>
+            </div>
+            <div class="project-body">
+              <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab('proj1','scenario')">Scenario</button>
+                <button class="tab-btn" onclick="switchTab('proj1','concepts')">Concepts</button>
+                <button class="tab-btn" onclick="switchTab('proj1','topology')">Topology</button>
+                <button class="tab-btn" onclick="switchTab('proj1','config')">Config</button>
+                <button class="tab-btn" onclick="switchTab('proj1','output')">Output</button>
+              </div>
+              <div class="tab-content active" data-tab="scenario">
+                <div class="content-block">
+                  <h4>Background</h4>
+                  <p>TechNova Sdn Bhd operates a single-site office with multiple departments sharing the same flat network, causing broadcast storms, security gaps, and poor traffic management.</p>
+                </div>
+                <div class="callout warn">
+                  <strong style="color:var(--warn)">Problem:</strong> All departments (HR, IT, Finance, Sales) were on the same subnet. Any broadcast hit every device. Sensitive finance data had no isolation.
+                </div>
+                <div class="callout success">
+                  <strong style="color:var(--success)">Goal:</strong> Segment the network into department VLANs, enable inter-VLAN routing so they can still communicate where needed, and apply access controls.
+                </div>
+              </div>
+              <div class="tab-content" data-tab="concepts">
+                <div class="content-block">
+                  <h4>Key Concepts Applied</h4>
+                  <ul class="steps">
+                    <li><span class="step-num">01</span> VLANs create logical network segments on the same physical switch — each department gets its own broadcast domain.</li>
+                    <li><span class="step-num">02</span> Trunk links carry tagged frames for multiple VLANs between switches and routers using 802.1Q encapsulation.</li>
+                    <li><span class="step-num">03</span> Router-on-a-Stick (ROAS) uses sub-interfaces on a single router port to route between VLANs.</li>
+                    <li><span class="step-num">04</span> ACLs are applied to restrict which VLANs can reach sensitive subnets (e.g. Finance).</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="tab-content" data-tab="topology">
+                <div class="content-block">
+                  <h4>Network Diagram</h4>
+                  <div class="topo-placeholder">
+                    <div class="topo-icon">🖧</div>
+                    <p>Upload your Packet Tracer topology screenshot here.</p>
+                    <p style="margin-top:10px;font-size:12px;color:var(--muted)">Replace this placeholder with:</p>
+                    <div style="margin-top:8px;background:#0d1117;border-radius:6px;padding:10px 14px;font-family:var(--mono);font-size:11px;color:var(--accent);text-align:left;">
+                      &lt;img src="proj1-topology.png"<br>
+                      &nbsp;&nbsp;&nbsp;&nbsp; class="topo-img"<br>
+                      &nbsp;&nbsp;&nbsp;&nbsp; alt="VLAN Topology"<br>
+                      &nbsp;&nbsp;&nbsp;&nbsp; onclick="openLightbox(this)" /&gt;<br>
+                      &lt;p class="img-hint"&gt;click to enlarge&lt;/p&gt;
+                    </div>
+                    <div class="topo-label">[ topology diagram ]</div>
+                  </div>
+                </div>
+                <div class="content-block">
+                  <h4>IP Addressing</h4>
+                  <div class="code-block">
+<span class="cm">! VLAN assignments</span>
+VLAN 10 — HR       192.168.10.0/24
+VLAN 20 — IT       192.168.20.0/24
+VLAN 30 — Finance  192.168.30.0/24
+VLAN 40 — Sales    192.168.40.0/24
+                  </div>
+                </div>
+              </div>
+              <div class="tab-content" data-tab="config">
+                <div class="content-block">
+                  <h4>Switch Config (excerpt)</h4>
+                  <div class="code-block">
+<span class="kw">vlan</span> 10
+ name HR
+<span class="kw">vlan</span> 20
+ name IT
+<span class="cm">!</span>
+<span class="kw">interface</span> Fa0/1
+ switchport mode access
+ switchport access vlan 10
+<span class="cm">!</span>
+<span class="kw">interface</span> Fa0/24
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30,40
+                  </div>
+                </div>
+                <div class="content-block">
+                  <h4>Router Sub-interface Config</h4>
+                  <div class="code-block">
+<span class="kw">interface</span> Gig0/0.10
+ encapsulation dot1Q 10
+ ip address 192.168.10.1 255.255.255.0
+<span class="cm">!</span>
+<span class="kw">interface</span> Gig0/0.30
+ encapsulation dot1Q 30
+ ip address 192.168.30.1 255.255.255.0
+                  </div>
+                </div>
+              </div>
+              <div class="tab-content" data-tab="output">
+                <div class="content-block">
+                  <h4>Verification Results</h4>
+                  <div class="result-grid">
+                    <div class="result-item"><div class="r-label">HR → IT Ping</div><div class="r-val">✓ Reachable</div></div>
+                    <div class="result-item"><div class="r-label">Sales → Finance</div><div class="r-val warn">✗ Blocked (ACL)</div></div>
+                    <div class="result-item"><div class="r-label">Broadcast Domain</div><div class="r-val blue">Isolated ×4</div></div>
+                  </div>
+                </div>
+                <div class="content-block">
+                  <h4>What I Learned</h4>
+                  <div class="callout purple">Misconfiguring the trunk native VLAN caused a silent loop — debugging it trained me to read <code>show vlan brief</code> and <code>show interfaces trunk</code> carefully.</div>
+                </div>
+              </div>
+            </div>
+          </div><!-- /proj1 -->
 
-        <div id="p2b6" class="tab-content">
-            Successful inter-VLAN communication achieved.
-        </div>
+          <div class="project-card" id="proj1b">
+            <div class="project-header" onclick="toggleProject('proj1b')">
+              <div class="project-meta">
+                <div class="project-eyebrow">Project 1C · Redundancy</div>
+                <div class="project-title">Campus Network with Redundant Uplinks</div>
+                <div class="project-badges">
+                  <span class="badge badge-blue">STP</span>
+                  <span class="badge badge-amber">EtherChannel</span>
+                  <span class="badge badge-purple">Cisco PT</span>
+                </div>
+              </div>
+              <div class="project-toggle">⌄</div>
+            </div>
+            <div class="project-body">
+              <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab('proj1b','scenario')">Scenario</button>
+                <button class="tab-btn" onclick="switchTab('proj1b','topology')">Topology</button>
+                <button class="tab-btn" onclick="switchTab('proj1b','config')">Config</button>
+                <button class="tab-btn" onclick="switchTab('proj1b','output')">Output</button>
+              </div>
+              <div class="tab-content active" data-tab="scenario">
+                <div class="callout">
+                  <strong style="color:var(--accent)">Coming Soon</strong> — Replace this with your actual project details when ready.
+                </div>
+              </div>
+              <div class="tab-content" data-tab="topology">
+                <div class="topo-placeholder"><div class="topo-icon">🖧</div><p>Topology coming soon.</p><div class="topo-label">[ work in progress ]</div></div>
+              </div>
+              <div class="tab-content" data-tab="config">
+                <div class="content-block"><p style="color:var(--muted)">Configuration details will be added when the lab is complete.</p></div>
+              </div>
+              <div class="tab-content" data-tab="output">
+                <div class="content-block"><p style="color:var(--muted)">Verification output will be added when the lab is complete.</p></div>
+              </div>
+            </div>
+          </div><!-- /proj1b -->
 
+        </div><!-- /cat-group lan -->
+
+        <!-- ══ WAN CATEGORY ══ -->
+        <div class="cat-group" data-cat="wan">
+
+          <div class="project-card" id="proj2">
+            <div class="project-header" onclick="toggleProject('proj2')">
+              <div class="project-meta">
+                <div class="project-eyebrow">Project 2A · Routing &amp; WAN</div>
+                <div class="project-title">Multi-Site WAN Routing with OSPF &amp; BGP</div>
+                <div class="project-badges">
+                  <span class="badge badge-blue">OSPF</span>
+                  <span class="badge badge-purple">eBGP</span>
+                  <span class="badge badge-amber">WAN</span>
+                  <span class="badge badge-green">ACL</span>
+                  <span class="badge badge-purple">Cisco PT</span>
+                </div>
+              </div>
+              <div class="project-toggle">⌄</div>
+            </div>
+            <div class="project-body">
+              <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab('proj2','scenario')">Scenario</button>
+                <button class="tab-btn" onclick="switchTab('proj2','concepts')">Concepts</button>
+                <button class="tab-btn" onclick="switchTab('proj2','topology')">Topology</button>
+                <button class="tab-btn" onclick="switchTab('proj2','config')">HQ Config</button>
+                <button class="tab-btn" onclick="switchTab('proj2','branch')">Branch Config</button>
+                <button class="tab-btn" onclick="switchTab('proj2','output')">Output</button>
+              </div>
+              <div class="tab-content active" data-tab="scenario">
+                <div class="content-block">
+                  <h4>Background</h4>
+                  <p>TechNova Sdn Bhd has expanded to three locations — a main HQ in Kuala Lumpur, Branch 1 in Penang, and Branch 2 in Johor. Each site has its own local network with department VLANs.</p>
+                </div>
+                <div class="callout warn">
+                  <strong style="color:var(--warn)">Problem:</strong> The three sites have no inter-site communication. Staff at branches cannot reach HQ resources or each other.
+                </div>
+                <div class="callout success">
+                  <strong style="color:var(--success)">Solution:</strong> Deploy OSPF within each site, use eBGP between sites via ISP-simulated routers, and apply ACLs to restrict cross-site department access.
+                </div>
+              </div>
+              <div class="tab-content" data-tab="concepts">
+                <div class="content-block">
+                  <h4>Key Concepts Applied</h4>
+                  <ul class="steps">
+                    <li><span class="step-num">01</span> <strong style="color:var(--text)">OSPF (Area 0)</strong> — Link-state IGP used within each site to build a complete local routing table.</li>
+                    <li><span class="step-num">02</span> <strong style="color:var(--text)">eBGP</strong> — EGP used between sites, simulating how real ISPs connect autonomous systems.</li>
+                    <li><span class="step-num">03</span> <strong style="color:var(--text)">WAN Links</strong> — Serial point-to-point links between ISP routers simulate internet transit paths.</li>
+                    <li><span class="step-num">04</span> <strong style="color:var(--text)">Route Redistribution</strong> — OSPF routes redistributed into BGP so remote sites learn all local subnets.</li>
+                    <li><span class="step-num">05</span> <strong style="color:var(--text)">ACLs</strong> — Extended ACLs control which departments across sites can communicate.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="tab-content" data-tab="topology">
+                <div class="content-block">
+                  <h4>Overall Topology</h4>
+                  <div class="topo-placeholder">
+                    <div class="topo-icon">🌐</div>
+                    <p>Upload your full WAN topology diagram here.</p>
+                    <p style="margin-top:10px;font-size:12px;color:var(--muted)">Replace this placeholder with:</p>
+                    <div style="margin-top:8px;background:#0d1117;border-radius:6px;padding:10px 14px;font-family:var(--mono);font-size:11px;color:var(--accent);text-align:left;">
+                      &lt;img src="proj2-wan-topology.png"<br>
+                      &nbsp;&nbsp;&nbsp;&nbsp; class="topo-img"<br>
+                      &nbsp;&nbsp;&nbsp;&nbsp; alt="WAN Topology"<br>
+                      &nbsp;&nbsp;&nbsp;&nbsp; onclick="openLightbox(this)" /&gt;<br>
+                      &lt;p class="img-hint"&gt;click to enlarge&lt;/p&gt;
+                    </div>
+                    <div class="topo-label">[ HQ — ISP — Branch1 — Branch2 ]</div>
+                  </div>
+                </div>
+                <div class="content-block">
+                  <h4>IP Plan</h4>
+                  <div class="code-block">
+<span class="cm">! Autonomous Systems</span>
+HQ      AS 100   10.0.0.0/8
+Branch1 AS 200   172.16.0.0/16
+Branch2 AS 300   172.17.0.0/16
+<span class="cm">!</span>
+<span class="cm">! WAN Links (ISP simulation)</span>
+HQ ↔ ISP1      203.0.113.0/30
+ISP1 ↔ Branch1 203.0.113.4/30
+ISP1 ↔ Branch2 203.0.113.8/30
+                  </div>
+                </div>
+              </div>
+              <div class="tab-content" data-tab="config">
+                <div class="content-block">
+                  <h4>HQ Router — OSPF + eBGP</h4>
+                  <div class="code-block">
+<span class="kw">router ospf</span> 1
+ network 10.0.0.0 0.255.255.255 area 0
+ redistribute bgp 100 subnets
+<span class="cm">!</span>
+<span class="kw">router bgp</span> 100
+ neighbor 203.0.113.2 remote-as 999
+ network 10.0.0.0 mask 255.0.0.0
+ redistribute ospf 1
+                  </div>
+                </div>
+              </div>
+              <div class="tab-content" data-tab="branch">
+                <div class="content-block">
+                  <h4>Branch 1 (Penang) Router</h4>
+                  <div class="code-block">
+<span class="kw">router ospf</span> 1
+ network 172.16.0.0 0.0.255.255 area 0
+<span class="cm">!</span>
+<span class="kw">router bgp</span> 200
+ neighbor 203.0.113.5 remote-as 999
+ network 172.16.0.0 mask 255.255.0.0
+ redistribute ospf 1
+                  </div>
+                </div>
+                <div class="content-block">
+                  <h4>ACL — Cross-site Restriction</h4>
+                  <div class="code-block">
+<span class="cm">! Deny Finance VLAN from Branch accessing HQ Finance</span>
+<span class="kw">ip access-list</span> extended CROSS-SITE
+ deny ip 172.16.30.0 0.0.0.255 10.30.0.0 0.0.0.255
+ permit ip any any
+<span class="cm">!</span>
+<span class="kw">interface</span> Serial0/0
+ ip access-group CROSS-SITE in
+                  </div>
+                </div>
+              </div>
+              <div class="tab-content" data-tab="output">
+                <div class="content-block">
+                  <h4>Verification Results</h4>
+                  <div class="result-grid">
+                    <div class="result-item"><div class="r-label">HQ ↔ Branch1</div><div class="r-val">✓ Connected</div></div>
+                    <div class="result-item"><div class="r-label">HQ ↔ Branch2</div><div class="r-val">✓ Connected</div></div>
+                    <div class="result-item"><div class="r-label">Branch1 ↔ Branch2</div><div class="r-val">✓ Connected</div></div>
+                    <div class="result-item"><div class="r-label">Finance Cross-site</div><div class="r-val warn">✗ Blocked (ACL)</div></div>
+                    <div class="result-item"><div class="r-label">BGP Routes</div><div class="r-val blue">3 AS Peered</div></div>
+                    <div class="result-item"><div class="r-label">OSPF Adjacency</div><div class="r-val">✓ Full/DR</div></div>
+                  </div>
+                </div>
+                <div class="content-block">
+                  <h4>What I Learned</h4>
+                  <div class="callout purple">OSPF routes weren't appearing in BGP tables because I forgot the <code>subnets</code> keyword. That one word cost me two hours — and taught me to always check redistribution flags first.</div>
+                </div>
+              </div>
+            </div>
+          </div><!-- /proj2 -->
+
+          <div class="project-card" id="proj2b">
+            <div class="project-header" onclick="toggleProject('proj2b')">
+              <div class="project-meta">
+                <div class="project-eyebrow">Project 2B · Routing</div>
+                <div class="project-title">Route Redundancy &amp; Failover with OSPF Costs</div>
+                <div class="project-badges">
+                  <span class="badge badge-blue">OSPF</span>
+                  <span class="badge badge-amber">Failover</span>
+                  <span class="badge badge-purple">Cisco PT</span>
+                </div>
+              </div>
+              <div class="project-toggle">⌄</div>
+            </div>
+            <div class="project-body">
+              <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab('proj2b','scenario')">Scenario</button>
+                <button class="tab-btn" onclick="switchTab('proj2b','topology')">Topology</button>
+                <button class="tab-btn" onclick="switchTab('proj2b','config')">Config</button>
+                <button class="tab-btn" onclick="switchTab('proj2b','output')">Output</button>
+              </div>
+              <div class="tab-content active" data-tab="scenario">
+                <div class="callout">
+                  <strong style="color:var(--accent)">Coming Soon</strong> — Replace this with your actual project details when ready.
+                </div>
+              </div>
+              <div class="tab-content" data-tab="topology">
+                <div class="topo-placeholder"><div class="topo-icon">🌐</div><p>Topology coming soon.</p><div class="topo-label">[ work in progress ]</div></div>
+              </div>
+              <div class="tab-content" data-tab="config">
+                <div class="content-block"><p style="color:var(--muted)">Configuration details will be added when the lab is complete.</p></div>
+              </div>
+              <div class="tab-content" data-tab="output">
+                <div class="content-block"><p style="color:var(--muted)">Verification output will be added when the lab is complete.</p></div>
+              </div>
+            </div>
+          </div><!-- /proj2b -->
+
+        </div><!-- /cat-group wan -->
+
+        <!-- ══ SECURITY CATEGORY ══ -->
+        <div class="cat-group" data-cat="sec">
+
+          <div class="project-card" id="proj3">
+            <div class="project-header" onclick="toggleProject('proj3')">
+              <div class="project-meta">
+                <div class="project-eyebrow">Project 3A · Security</div>
+                <div class="project-title">Device Hardening &amp; Site-to-Site VPN</div>
+                <div class="project-badges">
+                  <span class="badge badge-red">VPN</span>
+                  <span class="badge badge-red">Hardening</span>
+                  <span class="badge badge-green">ACL</span>
+                  <span class="badge badge-purple">Cisco PT</span>
+                </div>
+              </div>
+              <div class="project-toggle">⌄</div>
+            </div>
+            <div class="project-body">
+              <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab('proj3','scenario')">Scenario</button>
+                <button class="tab-btn" onclick="switchTab('proj3','topology')">Topology</button>
+                <button class="tab-btn" onclick="switchTab('proj3','config')">Config</button>
+                <button class="tab-btn" onclick="switchTab('proj3','output')">Output</button>
+              </div>
+              <div class="tab-content active" data-tab="scenario">
+                <div class="callout">
+                  <strong style="color:var(--accent)">Coming Soon</strong> — Replace this with your actual project details when ready.
+                </div>
+              </div>
+              <div class="tab-content" data-tab="topology">
+                <div class="topo-placeholder"><div class="topo-icon">🔒</div><p>Topology coming soon.</p><div class="topo-label">[ work in progress ]</div></div>
+              </div>
+              <div class="tab-content" data-tab="config">
+                <div class="content-block"><p style="color:var(--muted)">Configuration details will be added when the lab is complete.</p></div>
+              </div>
+              <div class="tab-content" data-tab="output">
+                <div class="content-block"><p style="color:var(--muted)">Verification output will be added when the lab is complete.</p></div>
+              </div>
+            </div>
+          </div><!-- /proj3 -->
+
+          <div class="project-card" id="proj3b">
+            <div class="project-header" onclick="toggleProject('proj3b')">
+              <div class="project-meta">
+                <div class="project-eyebrow">Project 3B · Security</div>
+                <div class="project-title">Firewall Zoning &amp; DMZ Architecture</div>
+                <div class="project-badges">
+                  <span class="badge badge-red">Firewall</span>
+                  <span class="badge badge-red">DMZ</span>
+                  <span class="badge badge-purple">Cisco PT</span>
+                </div>
+              </div>
+              <div class="project-toggle">⌄</div>
+            </div>
+            <div class="project-body">
+              <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab('proj3b','scenario')">Scenario</button>
+                <button class="tab-btn" onclick="switchTab('proj3b','topology')">Topology</button>
+                <button class="tab-btn" onclick="switchTab('proj3b','config')">Config</button>
+                <button class="tab-btn" onclick="switchTab('proj3b','output')">Output</button>
+              </div>
+              <div class="tab-content active" data-tab="scenario">
+                <div class="callout">
+                  <strong style="color:var(--accent)">Coming Soon</strong> — Replace this with your actual project details when ready.
+                </div>
+              </div>
+              <div class="tab-content" data-tab="topology">
+                <div class="topo-placeholder"><div class="topo-icon">🔒</div><p>Topology coming soon.</p><div class="topo-label">[ work in progress ]</div></div>
+              </div>
+              <div class="tab-content" data-tab="config">
+                <div class="content-block"><p style="color:var(--muted)">Configuration details will be added when the lab is complete.</p></div>
+              </div>
+              <div class="tab-content" data-tab="output">
+                <div class="content-block"><p style="color:var(--muted)">Verification output will be added when the lab is complete.</p></div>
+              </div>
+            </div>
+          </div><!-- /proj3b -->
+
+        </div><!-- /cat-group sec -->
+
+        <!-- ══ MONITORING CATEGORY ══ -->
+        <div class="cat-group" data-cat="mon">
+
+          <div class="project-card" id="proj4">
+            <div class="project-header" onclick="toggleProject('proj4')">
+              <div class="project-meta">
+                <div class="project-eyebrow">Project 4A · Monitoring & Automation</div>
+                <div class="project-title">Network monitoring &amp; Python automation</div>
+                <div class="project-badges">
+                  <span class="badge badge-red">Python (netmiko)</span>
+                  <span class="badge badge-red">Zabbix</span>
+                  <span class="badge badge-green">SNMP</span>
+                  <span class="badge badge-purple">AutomationT</span>
+                </div>
+              </div>
+              <div class="project-toggle">⌄</div>
+            </div>
+            <div class="project-body">
+              <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab('proj4','scenario')">Scenario</button>
+                <button class="tab-btn" onclick="switchTab('proj4','topology')">Topology</button>
+                <button class="tab-btn" onclick="switchTab('proj4','config')">Config</button>
+                <button class="tab-btn" onclick="switchTab('proj4','output')">Output</button>
+              </div>
+              <div class="tab-content active" data-tab="scenario">
+                <div class="callout">
+                  <strong style="color:var(--accent)">Coming Soon</strong> — Replace this with your actual project details when ready.
+                </div>
+              </div>
+              <div class="tab-content" data-tab="topology">
+                <div class="topo-placeholder"><div class="topo-icon">🔒</div><p>Topology coming soon.</p><div class="topo-label">[ work in progress ]</div></div>
+              </div>
+              <div class="tab-content" data-tab="config">
+                <div class="content-block"><p style="color:var(--muted)">Configuration details will be added when the lab is complete.</p></div>
+              </div>
+              <div class="tab-content" data-tab="output">
+                <div class="content-block"><p style="color:var(--muted)">Verification output will be added when the lab is complete.</p></div>
+              </div>
+            </div>
+          </div><!-- /proj4 -->
+
+          <div class="project-card" id="proj4b">
+            <div class="project-header" onclick="toggleProject('proj4b')">
+              <div class="project-meta">
+                <div class="project-eyebrow">Project 4B · Monitoring & Automation</div>
+                <div class="project-title">Ansible-based config management</div>
+                <div class="project-badges">
+                  <span class="badge badge-red">Ansible</span>
+                  <span class="badge badge-red">YAML</span>
+                  <span class="badge badge-purple">Config Management</span>
+                  <span class="badge badge-purple">IaC Concepts</span>
+                </div>
+              </div>
+              <div class="project-toggle">⌄</div>
+            </div>
+            <div class="project-body">
+              <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab('proj4b','scenario')">Scenario</button>
+                <button class="tab-btn" onclick="switchTab('proj4b','topology')">Topology</button>
+                <button class="tab-btn" onclick="switchTab('proj4b','config')">Config</button>
+                <button class="tab-btn" onclick="switchTab('proj4b','output')">Output</button>
+              </div>
+              <div class="tab-content active" data-tab="scenario">
+                <div class="callout">
+                  <strong style="color:var(--accent)">Coming Soon</strong> — Replace this with your actual project details when ready.
+                </div>
+              </div>
+              <div class="tab-content" data-tab="topology">
+                <div class="topo-placeholder"><div class="topo-icon">🔒</div><p>Topology coming soon.</p><div class="topo-label">[ work in progress ]</div></div>
+              </div>
+              <div class="tab-content" data-tab="config">
+                <div class="content-block"><p style="color:var(--muted)">Configuration details will be added when the lab is complete.</p></div>
+              </div>
+              <div class="tab-content" data-tab="output">
+                <div class="content-block"><p style="color:var(--muted)">Verification output will be added when the lab is complete.</p></div>
+              </div>
+            </div>
+          </div><!-- /proj4b -->
+
+        </div><!-- /cat-group mon -->
+
+        <!-- ══ ANALYSIS CATEGORY ══ -->
+        <div class="cat-group" data-cat="anal">
+
+          <div class="project-card" id="proj5">
+            <div class="project-header" onclick="toggleProject('proj5')">
+              <div class="project-meta">
+                <div class="project-eyebrow">Project 5A · Traffic Analysis</div>
+                <div class="project-title">Traffic fault diagnosis with Wireshark</div>
+                <div class="project-badges">
+                  <span class="badge badge-red">Wireshark</span>
+                  <span class="badge badge-red">tcpdump</span>
+                  <span class="badge badge-green">ARP analysis</span>
+                  <span class="badge badge-purple">OSPF diagnostics</span>
+                </div>
+              </div>
+              <div class="project-toggle">⌄</div>
+            </div>
+            <div class="project-body">
+              <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab('proj5','scenario')">Scenario</button>
+                <button class="tab-btn" onclick="switchTab('proj5','topology')">Topology</button>
+                <button class="tab-btn" onclick="switchTab('proj5','config')">Config</button>
+                <button class="tab-btn" onclick="switchTab('proj5','output')">Output</button>
+              </div>
+              <div class="tab-content active" data-tab="scenario">
+                <div class="callout">
+                  <strong style="color:var(--accent)">Coming Soon</strong> — Replace this with your actual project details when ready.
+                </div>
+              </div>
+              <div class="tab-content" data-tab="topology">
+                <div class="topo-placeholder"><div class="topo-icon">🔒</div><p>Topology coming soon.</p><div class="topo-label">[ work in progress ]</div></div>
+              </div>
+              <div class="tab-content" data-tab="config">
+                <div class="content-block"><p style="color:var(--muted)">Configuration details will be added when the lab is complete.</p></div>
+              </div>
+              <div class="tab-content" data-tab="output">
+                <div class="content-block"><p style="color:var(--muted)">Verification output will be added when the lab is complete.</p></div>
+              </div>
+            </div>
+          </div><!-- /proj5 -->
+
+          <div class="project-card" id="proj5b">
+            <div class="project-header" onclick="toggleProject('proj5b')">
+              <div class="project-meta">
+                <div class="project-eyebrow">Project 5B · Traffic Analysis</div>
+                <div class="project-title">Bandwidth analysis & traffic baseline</div>
+                <div class="project-badges">
+                  <span class="badge badge-red">Traffic baselining</span>
+                  <span class="badge badge-red">Wireshark I/O graphs</span>
+                  <span class="badge badge-purple">Protocol analysis</span>
+                  <span class="badge badge-purple">Anomaly detection</span>
+                </div>
+              </div>
+              <div class="project-toggle">⌄</div>
+            </div>
+            <div class="project-body">
+              <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab('proj5b','scenario')">Scenario</button>
+                <button class="tab-btn" onclick="switchTab('proj5b','topology')">Topology</button>
+                <button class="tab-btn" onclick="switchTab('proj5b','config')">Config</button>
+                <button class="tab-btn" onclick="switchTab('proj5b','output')">Output</button>
+              </div>
+              <div class="tab-content active" data-tab="scenario">
+                <div class="callout">
+                  <strong style="color:var(--accent)">Coming Soon</strong> — Replace this with your actual project details when ready.
+                </div>
+              </div>
+              <div class="tab-content" data-tab="topology">
+                <div class="topo-placeholder"><div class="topo-icon">🔒</div><p>Topology coming soon.</p><div class="topo-label">[ work in progress ]</div></div>
+              </div>
+              <div class="tab-content" data-tab="config">
+                <div class="content-block"><p style="color:var(--muted)">Configuration details will be added when the lab is complete.</p></div>
+              </div>
+              <div class="tab-content" data-tab="output">
+                <div class="content-block"><p style="color:var(--muted)">Verification output will be added when the lab is complete.</p></div>
+              </div>
+            </div>
+          </div><!-- /proj5b -->
+
+        </div><!-- /cat-group anal -->
+
+      </div><!-- /projects-pane -->
+    </div><!-- /projects-layout -->
+  </section>
+</div>
+
+<!-- ─── ACHIEVEMENTS ─── -->
+<div class="page">
+  <section id="achievements">
+    <div class="section-label">// Leadership &amp; Contribution</div>
+    <h2 class="section-title">Achievements</h2>
+    <p class="section-sub">Roles, contributions, and recognitions during my studies — beyond the lab.</p>
+
+    <div class="achievements-grid">
+      <div class="achievement-card">
+        <div class="ach-icon">🏆</div>
+        <div class="ach-title">Achievement Title Here</div>
+        <div class="ach-year">Year · Institution</div>
+        <div class="ach-desc">Describe what you did, what role you played, and the impact it had. Keep it specific — numbers and outcomes are more memorable than adjectives.</div>
+      </div>
+      <div class="achievement-card">
+        <div class="ach-icon">👥</div>
+        <div class="ach-title">Leadership Role</div>
+        <div class="ach-year">Year · Club or Event</div>
+        <div class="ach-desc">e.g. Led a team of 12 students to organise a campus cybersecurity workshop attended by 80+ participants. Managed logistics, speaker coordination, and live demo setup.</div>
+      </div>
+      <div class="achievement-card">
+        <div class="ach-icon">📜</div>
+        <div class="ach-title">Certification or Award</div>
+        <div class="ach-year">Year</div>
+        <div class="ach-desc">e.g. Cisco Networking Academy — Introduction to Networks (ITN). Completed with distinction. Covers IPv4/IPv6, subnetting, Ethernet, and basic switching.</div>
+      </div>
+      <div class="achievement-card">
+        <div class="ach-icon">🤝</div>
+        <div class="ach-title">Community / Volunteer</div>
+        <div class="ach-year">Year</div>
+        <div class="ach-desc">Describe any volunteer work, mentoring, or community contribution related to tech, education, or leadership. Add another card by duplicating this block.</div>
+      </div>
     </div>
+  </section>
+</div>
 
-</section>
+<!-- ─── ABOUT ─── -->
+<div class="page">
+  <section id="about">
+    <div class="section-label">// About Me</div>
+    <h2 class="section-title">Who I Am</h2>
 
-<!-- LEADERSHIP -->
-<section id="leadership">
-    <h2 class="section-title">Leadership & Contributions</h2>
-
-    <div class="card">
-        • Project Leader in networking labs<br>
-        • Managed team-based configuration tasks<br>
-        • Organized technical lab sessions<br>
-        • Peer mentoring in Cisco networking fundamentals
+    <div class="about-grid">
+      <div>
+        <p class="about-text">
+          <p>I'm a Computer Networking student based in Malaysia, passionate about building and securing networks that actually work at scale. My labs are built in Cisco Packet Tracer with real enterprise scenarios in mind.</p>
+          <p style="margin-top:14px">I'm most interested in WAN architecture, network security, and eventually pursuing a career in network engineering or security operations.</p>
+          <p style="margin-top:14px">Outside of the lab, I'm involved in student leadership and enjoy breaking down complex network concepts for classmates.</p>
+        </p>
+      </div>
+      <div>
+        <div class="contact-links">
+          <a href="mailto:your@email.com" class="contact-link">
+            <span class="cl-icon">✉</span>
+            <div>
+              <div>your@email.com</div>
+              <div class="cl-label">Email</div>
+            </div>
+          </a>
+          <a href="https://linkedin.com/in/yourprofile" class="contact-link" target="_blank">
+            <span class="cl-icon">💼</span>
+            <div>
+              <div>linkedin.com/in/yourprofile</div>
+              <div class="cl-label">LinkedIn</div>
+            </div>
+          </a>
+          <a href="https://github.com/yourusername" class="contact-link" target="_blank">
+            <span class="cl-icon">⌥</span>
+            <div>
+              <div>github.com/yourusername</div>
+              <div class="cl-label">GitHub</div>
+            </div>
+          </a>
+        </div>
+      </div>
     </div>
-</section>
+  </section>
+</div>
 
-<!-- CONTACT -->
-<section id="contact">
-    <h2 class="section-title">Contact</h2>
-
-    <div class="card">
-        Email: yourname@email.com <br>
-        LinkedIn: linkedin.com/in/yourprofile <br>
-        GitHub: github.com/yourusername
-    </div>
-</section>
+<!-- ─── LIGHTBOX OVERLAY ─── -->
+<div id="lightbox" onclick="closeLightbox()">
+  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="" />
+  <div id="lightbox-caption"></div>
+</div>
 
 <footer>
-    © 2026 Network Security Portfolio
+  <div>Built with HTML &amp; CSS · No frameworks · Hosted on GitHub Pages</div>
+  <div style="margin-top:6px; color:var(--dim)">// packets delivered, career loading...</div>
 </footer>
 
 <script>
-function toggleProject(id){
-    var content = document.getElementById(id);
-    content.style.display = (content.style.display === "block") ? "none" : "block";
-}
+  // ─── Lightbox ───
+  function openLightbox(imgEl) {
+    const lb = document.getElementById('lightbox');
+    document.getElementById('lightbox-img').src = imgEl.src;
+    document.getElementById('lightbox-caption').textContent = imgEl.alt || '';
+    lb.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
 
-function openTab(evt, tabId){
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('active');
+    document.body.style.overflow = '';
+  }
 
-    var contents = document.getElementsByClassName("tab-content");
-    for(let c of contents){
-        c.classList.remove("active");
+  // close on Escape key
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeLightbox();
+  });
+
+  // ─── Counter animation ───
+  function animateCounter(el, target, suffix, duration) {
+    let start = 0;
+    const step = Math.ceil(duration / target);
+    const timer = setInterval(() => {
+      start++;
+      el.textContent = start + suffix;
+      if (start >= target) {
+        el.textContent = target + suffix;
+        clearInterval(timer);
+      }
+    }, step);
+  }
+
+  // Trigger when the stat scrolls into view
+  const statEl = document.getElementById('stat-projects');
+  let counted = false;
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting && !counted) {
+      counted = true;
+      animateCounter(statEl, 12, '+', 800);
     }
+  }, { threshold: 0.5 });
+  observer.observe(statEl);
 
-    var buttons = document.getElementsByClassName("tab-btn");
-    for(let b of buttons){
-        b.classList.remove("active");
-    }
+  // ─── Category switching ───
+  const catCounts = { lan: 2, wan: 2, sec: 2, mon: 2, anal: 2 };
+  const catLabels = {
+    lan: '2 projects',
+    wan: '2 projects',
+    sec: '2 projects',
+    mon: '2 projects',
+    anal: '2 projects'
+  };
 
-    document.getElementById(tabId).classList.add("active");
-    evt.currentTarget.classList.add("active");
-}
+  // Set count labels on load
+  Object.keys(catCounts).forEach(cat => {
+    const el = document.getElementById('count-' + cat);
+    if (el) el.textContent = catLabels[cat];
+  });
+
+  function selectCategory(cat) {
+    // sidebar items
+    document.querySelectorAll('.cat-item').forEach(el => {
+      el.classList.toggle('active', el.dataset.cat === cat);
+    });
+    // mobile pills
+    document.querySelectorAll('.cat-pill').forEach(el => {
+      const fn = el.getAttribute('onclick');
+      el.classList.toggle('active', fn && fn.includes("'" + cat + "'"));
+    });
+    // show/hide cat groups
+    document.querySelectorAll('.cat-group').forEach(el => {
+      el.classList.toggle('active', el.dataset.cat === cat);
+    });
+    // collapse all open cards when switching category
+    document.querySelectorAll('.project-card.open').forEach(card => {
+      card.classList.remove('open');
+    });
+  }
+
+  function toggleProject(id) {
+    const card = document.getElementById(id);
+    card.classList.toggle('open');
+  }
+
+  function switchTab(projectId, tabName) {
+    const card = document.getElementById(projectId);
+    // update buttons
+    card.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    card.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+
+    // find clicked button and matching content
+    const clickedBtn = [...card.querySelectorAll('.tab-btn')].find(b => b.getAttribute('onclick').includes(`'${tabName}'`));
+    const targetContent = card.querySelector(`.tab-content[data-tab="${tabName}"]`);
+
+    if (clickedBtn) clickedBtn.classList.add('active');
+    if (targetContent) targetContent.classList.add('active');
+  }
 </script>
-
 </body>
 </html>
