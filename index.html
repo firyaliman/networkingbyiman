@@ -635,12 +635,8 @@
     }
     .evidence-thumb:hover { border-color: var(--accent); opacity: 0.9; }
     .evidence-caption {
-      font-family: var(--mono);
-      font-size: 10.5px;
-      color: var(--muted);
-      line-height: 1.4;
+      display: none;
     }
-    .evidence-caption strong { color: var(--text); }
 
     /* ─── Involvement section photo frames (smaller than project screenshots) ─── */
     .tl-item .evidence-gallery {
@@ -720,11 +716,18 @@
       left: 50%;
       transform: translateX(-50%);
       font-family: var(--mono);
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: 0.08em;
+      font-size: 12px;
+      color: var(--text);
+      letter-spacing: 0.06em;
       white-space: nowrap;
+      background: rgba(11, 15, 26, 0.85);
+      border: 1px solid var(--border);
+      padding: 10px 18px;
+      border-radius: 8px;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
     }
+    #lightbox-caption strong { color: var(--accent); }
 
     /* ─── Timeline ─── */
     .timeline {
@@ -952,8 +955,8 @@
 <div class="page">
   <section id="projects">
     <div class="section-label">// Case Studies</div>
-    <h2 class="section-title">Network Projects</h2>
-    <p class="section-sub">Select a focus area on the left, then expand any project to walk through it tab by tab.</p>
+    <h2 class="section-title">Technical Projects</h2>
+    <p class="section-sub">A collection of enterprise networking projects documenting the journey from design and configuration to testing, troubleshooting, and validation.</p>
 
     <div class="tag-legend">
       <div class="lg-item"><span class="lg-dot" style="background:var(--accent)"></span> Switching</div>
@@ -968,7 +971,11 @@
       <button class="cat-pill active" onclick="selectCategory('lan')">🏢 LAN & Switching</button>
       <button class="cat-pill" onclick="selectCategory('wan')">🌐 Routing & WAN</button>
       <button class="cat-pill" onclick="selectCategory('sec')">🔒 Network Security</button>
+
+      <!-- Traffic Analysis category hidden until a project is ready — uncomment to bring back
       <button class="cat-pill" onclick="selectCategory('anal')">🚦 Traffic Analysis</button>
+      -->
+
     </div>
 
     <div class="projects-layout">
@@ -995,7 +1002,8 @@
             <div class="cat-name">Network Security</div>
             <div class="cat-count" id="count-sec"></div>
           </div>
-        </div>       
+        </div>    
+        <!-- Traffic Analysis category hidden until a project is ready — uncomment to bring back   
         <div class="cat-item" onclick="selectCategory('anal')" data-cat="anal">
           <div class="cat-icon">🚦</div>
           <div class="cat-info">
@@ -1003,6 +1011,7 @@
             <div class="cat-count" id="count-anal"></div>
           </div>
         </div>
+        -->
       </aside>
 
       <!-- ── Project list ── -->
@@ -1039,13 +1048,22 @@
               <div class="tab-content active" data-tab="scenario">
                 <div class="content-block">
                   <h4>Background</h4>
-                  <p>TechNova Sdn Bhd operates a 3-story, high-occupancy hotel network supporting guest WiFi, guest room devices, hospitality IP phones, back-office administration, and point-of-sale payment terminals — all sharing the same physical infrastructure, with continuous uptime expected across every guest-facing and payment-processing system.</p>
+                  <p>TechNova Sdn Bhd operates a three-storey, high-occupancy hotel network supporting multiple critical services, including guest WiFi, guest room devices, hospitality IP phones, back-office operations, and point-of-sale (POS) payment systems. Since these services directly impact guest experience and business operations, the network requires high availability, proper segmentation, and strong security controls.</p>
                 </div>
                 <div class="callout warn">
-                  <strong style="color:var(--warn)">Problem:</strong> A single core switch meant one hardware failure could take down guest WiFi, phones, and payment processing at the same time. Guest devices, POS terminals, and staff systems had no traffic separation, so a compromised guest laptop could potentially reach payment infrastructure — a direct PCI-DSS compliance risk. On top of that, default switch settings left dynamic trunk negotiation (DTP) enabled and Native VLAN 1 active across every inter-switch link, leaving the backbone exposed to VLAN hopping.
+                  <strong style="color:var(--warn)">Problem:</strong>
+		<p>The existing design relied on a single core switch, creating a single point of failure that could disrupt multiple services during hardware failure.</p>
+		<p>Additionally, all devices shared the same infrastructure without proper segmentation, allowing potential security risks such as unauthorised access between guest networks and sensitive systems like POS terminals. Default Layer 2 configurations, including DTP negotiation and Native VLAN 1 usage, also increased exposure to VLAN hopping attacks.</p>
                 </div>
                 <div class="callout success">
-                  <strong style="color:var(--success)">Solution:</strong> Deploy two core multilayer switches in an <strong style="color:var(--text)">HSRP-redundant pair</strong>, splitting the active gateway role per VLAN so both cores carry real traffic simultaneously instead of one sitting idle. Segment the network into purpose-built VLANs (Guest WiFi, Guest Rooms, POS, Voice, Admin, Management), bond access-switch uplinks with <strong style="color:var(--text)">LACP EtherChannel</strong>, and run OSPF between the cores and a WAN edge router for uplink failover. Harden every trunk link by disabling DTP negotiation and moving native VLAN traffic onto an isolated, unrouted <strong style="color:var(--text)">VLAN 999 dead-end network</strong> — closing off VLAN 1 as an attack surface. Layer ACLs to isolate guest traffic from POS/Admin, and port security to lock down user-facing ports.
+                  <strong style="color:var(--success)">Solution:</strong>
+	      <ul class="tl-item-list">
+  	        <li>Implemented <strong style="color:var(--text)">dual multilayer core switches with HSRP redundancy</strong> to eliminate single points of failure.</li>
+		<li>Designed VLAN segmentation for Guest WiFi, Guest Rooms, POS, Voice, Administration, and Management networks.</li>
+		<li>Deployed <strong style="color:var(--text)">LACP EtherChannel</strong> for redundant uplinks between access and core switches.</li>
+		<li>Configured <strong style="color:var(--text)">OSPF routing</strong> for dynamic failover between the core and WAN edge router.</li>
+		<li>Hardened Layer 2 security by disabling DTP, isolating Native VLAN traffic using VLAN 999, and applying ACLs and port security to restrict unauthorised access.</li>
+	      </ul>
                 </div>
               </div>
 
@@ -1284,13 +1302,21 @@ Core-MLS-1(config-router)#network 10.99.99.0 0.0.0.255 area 0
               <div class="tab-content active" data-tab="scenario">
                 <div class="content-block">
                   <h4>Background</h4>
-                  <p>TechNova Sdn Bhd operates three sites — a Headquarters and two branch offices in Penang and Johor — each with its own local VLANs for users, servers, and management. The three sites needed to communicate reliably over WAN links simulating how real companies connect branch offices through an ISP.</p>
+                  <p>TechNova Sdn Bhd operates across three locations: a Headquarters and two branch offices in Penang and Johor. Each site contains its own local VLANs supporting user devices, servers, and management networks. The objective was to design a scalable WAN architecture that enables reliable communication between locations while maintaining clear separation between internal networks.</p>
                 </div>
                 <div class="callout warn">
-                  <strong style="color:var(--warn)">Problem:</strong> Each site's local network was isolated with no path to reach the other two locations. Simply running one routing protocol everywhere wasn't realistic — real enterprises don't share a single IGP across sites they don't administer end-to-end, and don't want their entire internal topology exposed to an external network.
+                  <strong style="color:var(--warn)">Problem:</strong> 
+		<p>Each site's network operated independently, with no routing path between locations. A simple single routing domain would not accurately represent a real enterprise environment where different sites may operate under separate administrative boundaries and require controlled route exchange through a service provider.</p>
                 </div>
                 <div class="callout success">
-                  <strong style="color:var(--success)">Solution:</strong> Run <strong style="color:var(--text)">OSPF</strong> within each site to handle local inter-VLAN routing, and connect all three sites through a simulated <strong style="color:var(--text)">ISP using eBGP</strong> — each site advertising its networks as its own Autonomous System. Routes are redistributed between OSPF and BGP at each site's edge router so local subnets become reachable across the WAN without merging the sites into one flat routing domain. Each site's switch also hardens its trunk links onto an isolated, unrouted VLAN 99 <em>Black_Hole</em> network to close off Native VLAN 1 as an attack surface.
+                  <strong style="color:var(--success)">Solution:</strong>
+		<p>The WAN architecture was designed using a combination of OSPF and eBGP:</p>
+	      <ul class="tl-item-list">
+  	        <li>Implemented <strong style="color:var(--text)">OSPF within each site</strong> for internal routing and inter-VLAN communication.</li>
+		<li>Simulated an ISP environment using <strong style="color:var(--text)">eBGP</strong>, with each location operating as an independent Autonomous System (AS).</li>
+		<li>Configured route redistribution between OSPF and BGP at each site's edge router, allowing internal networks to communicate across the WAN without merging all locations into a single routing domain.</li>
+		<li>Hardened Layer 2 infrastructure by moving Native VLAN traffic away from VLAN 1 and placing unused trunk traffic into an isolated Black Hole VLAN.</li>
+	      </ul> 
                 </div>
               </div>
 
@@ -1450,7 +1476,7 @@ Core-MLS-1(config-router)#network 10.99.99.0 0.0.0.255 area 0
               <div class="tab-content" data-tab="output">
                 <div class="content-block">
                   <h4>Verification Checklist</h4>
-                  <p style="color:var(--muted); font-size:13px; margin-bottom:14px;">Run these commands after configuration to confirm the design works as intended. Expected results below reflect a correctly functioning setup based on the configuration — replace with your actual command output once verified.</p>
+
                   <div class="data-table-wrap">
                     <table class="data-table">
                       <thead><tr><th>#</th><th>Test</th><th>Expected Result</th></tr></thead>
@@ -1488,12 +1514,8 @@ Core-MLS-1(config-router)#network 10.99.99.0 0.0.0.255 area 0
                     </div>
 		</div>
                 </div>
-                <div class="content-block">
-                  <h4>What I Learned</h4>
-                  <div class="callout purple">
-                    Redistributing between OSPF and BGP at three separate edge routers made it clear why route redistribution needs to be handled carefully in a real network — each site is only supposed to know about the others' networks through BGP, not absorb their entire internal OSPF topology. Keeping OSPF and BGP as genuinely separate routing domains, only exchanging summarized reachability at the edge, is what actually makes a multi-site design scale without one site's internal changes rippling into another's routing table.
-                  </div>
-                </div>
+
+           
               </div>
             </div>
           </div><!-- /proj2 -->
@@ -1537,13 +1559,33 @@ Core-MLS-1(config-router)#network 10.99.99.0 0.0.0.255 area 0
               <div class="tab-content active" data-tab="scenario">
                 <div class="content-block">
                   <h4>Background</h4>
-                  <p>TechNova Sdn Bhd needed to expose a small set of services — HTTP, email, and an external-facing FTP server — to outside users, while keeping internal resources like DHCP, internal FTP, NTP, and Syslog fully protected. Previously, no formal perimeter boundary existed between public-facing and internal resources, and internal switch ports had no protection against spoofing or rogue devices.</p>
+                  <p>TechNova Sdn Bhd required a secure network architecture to support both public-facing services and internal infrastructure. The organisation needed to provide external access to services such as HTTP, email, and FTP while protecting sensitive internal resources including DHCP, internal FTP, NTP, and Syslog services.</p>
                 </div>
                 <div class="callout warn">
-                  <strong style="color:var(--warn)">Problem:</strong> Public services and internal resources sat on the same trust level. If a public-facing server were compromised, an attacker would have a direct path into HR, IT, and management VLANs. On top of that, switch ports had no port security, and the network was open to Layer 2 attacks like DHCP spoofing and ARP poisoning.
+                  <strong style="color:var(--warn)">Problem:</strong> 
+		<p>The existing design lacked proper network segmentation between public-facing services and internal resources. Without a dedicated security boundary, a compromised public server could potentially become a pathway for lateral movement into internal networks, including HR, IT, and management VLANs.</p>
+		<p>Additionally, access-layer switches lacked security controls against Layer 2 attacks such as rogue DHCP servers, ARP spoofing, and unauthorised device connections.</p>
                 </div>
                 <div class="callout success">
-                  <strong style="color:var(--success)">Solution:</strong> Deploy a Cisco ASA 5506-X as a three-zone firewall — <strong style="color:var(--text)">Inside</strong> (trusted LAN, including DHCP, Internal FTP, NTP, and Syslog services), <strong style="color:var(--text)">DMZ</strong> (public-facing servers), and <strong style="color:var(--text)">Outside</strong> (internet-facing). On the internal switches, layer port hardening, DHCP snooping, and Dynamic ARP Inspection (DAI) to stop Layer 2 attacks, and restrict SSH management access via ACL.
+                  <strong style="color:var(--success)">Solution:</strong>
+		<p>A multi-layer security architecture was implemented:</p>
+	      <ul class="tl-item-list">
+  	        <li>Deployed a <strong style="color:var(--text)">Cisco ASA 5506-X firewall</strong> using a three-zone design:
+    		 <ul>
+      		   <li><strong style="color:var(--text)">Inside Zone</strong> — trusted internal networks and services</li>
+      		   <li><strong style="color:var(--text)">DMZ Zone</strong> — publicly accessible servers</li>
+      		   <li><strong style="color:var(--text)">DMZ Zone</strong> — publicly accessible servers</li>
+   		 </ul>
+		</li>
+		<li>Configured firewall policies to control traffic flow between zones and restrict unauthorised access to internal resources.</li>
+		<li>Implemented switch security controls including:
+    		 <ul>
+      		   <li><strong style="color:var(--text)">Port Security</strong> to restrict unauthorised devices.</li>
+      		   <li><strong style="color:var(--text)">DHCP Snooping</strong> to prevent rogue DHCP servers.</li>
+      		   <li><strong style="color:var(--text)">Dynamic ARP Inspection (DAI)</strong> to mitigate ARP spoofing attacks</li>
+      		   <li><strong style="color:var(--text)">ACL-based SSH restrictions</strong> to secure network device management access.</li>
+   		 </ul>
+		</li>
                 </div>
               </div>
 
@@ -1740,10 +1782,12 @@ aaa authentication ssh console LOCAL
 
         </div><!-- /cat-group sec -->
 
-        <!-- ══ ANALYSIS CATEGORY ══ -->
-        <div class="cat-group" data-cat="anal">
+        <!-- ══ CLOSED CLOSED ANALYSIS CATEGORY ══ -->
 
-          <div class="project-card single-project" id="proj5">
+        <!-- Traffic Analysis category hidden until a project is ready — remove style="display:none" below to bring back -->
+        <div class="cat-group" data-cat="anal" style="display:none">
+
+          <div class="project-card single-project" id="proj4">
             <div class="project-header">
               <div class="project-meta">
                 <div class="project-eyebrow">Project 4A · Traffic Analysis</div>
@@ -1759,10 +1803,10 @@ aaa authentication ssh console LOCAL
             </div>
             <div class="project-body">
               <div class="tab-bar">
-                <button class="tab-btn active" onclick="switchTab('proj5','scenario')">Scenario</button>
-                <button class="tab-btn" onclick="switchTab('proj5','topology')">Topology</button>
-                <button class="tab-btn" onclick="switchTab('proj5','config')">Config</button>
-                <button class="tab-btn" onclick="switchTab('proj5','output')">Output</button>
+                <button class="tab-btn active" onclick="switchTab('proj4','scenario')">Scenario</button>
+                <button class="tab-btn" onclick="switchTab('proj4','topology')">Topology</button>
+                <button class="tab-btn" onclick="switchTab('proj4','config')">Config</button>
+                <button class="tab-btn" onclick="switchTab('proj4','output')">Output</button>
               </div>
               <div class="tab-content active" data-tab="scenario">
                 <div class="callout">
@@ -1779,7 +1823,7 @@ aaa authentication ssh console LOCAL
                 <div class="content-block"><p style="color:var(--muted)">Verification output will be added when the lab is complete.</p></div>
               </div>
             </div>
-          </div><!-- /proj5 -->
+          </div><!-- /proj4 -->
 
         </div><!-- /cat-group anal -->
 
@@ -1792,8 +1836,8 @@ aaa authentication ssh console LOCAL
 <div class="page">
   <section id="involvements">
     <div class="section-label">// Involvement</div>
-    <h2 class="section-title">My Journey</h2>
-    <p class="section-sub">Roles, contributions, and activities throughout my years of study — outside the lab.</p>
+    <h2 class="section-title">Beyond the Classroom</h2>
+    <p class="section-sub">If my technical projects show what I can build, these experiences show how I work with people. From organising events to leading committees, every opportunity helped me grow beyond the classroom.</p>
 
     <div class="timeline">
 
@@ -1839,18 +1883,20 @@ aaa authentication ssh console LOCAL
               <div class="tl-item-desc">After gaining experience within a student club, I stepped into a larger environment by becoming part of a university-level organisation through ULTRAS. This role exposed me to a broader scope of coordination and responsibility.</div>
 	      <div class="tl-item-subhead">// Key Contributions</div>
 	      <ul class="tl-item-list">
-  	        <li>Managed official documentation, meeting minutes, reports, and communication materials to support club operations.</li>
-  	        <li>Coordinated meetings and maintained clear communication between committee members and university stakeholders.</li>
- 		<li>Assisted in planning and executing club activities during the COVID-19 period, adapting to the challenges of conducting programmes virtually.</li>
+  	        <li>Performed administrative duties such as preparing paperwork, reports, letters, meeting minutes, and presentation materials.</li>
+  	        <li>Managed finances for the Ramadan Iftar Pack initiative, ensuring accurate budgeting and expenditure tracking.</li>
+ 		<li>Assisted in organising and executing the Ramadan Iftar Pack initiative for hostel-resident students, coordinating food preparation and distribution.</li>
 	      </ul>
                   <div class="evidence-gallery">
                     <div class="evidence-item">
                       <img src="images/2021_ultras(1).png" class="evidence-thumb" alt="Inside to DMZ HTTP success" onclick="openLightbox(this)" />
-                      <div class="evidence-caption"><strong>Test 4</strong> — Inside → DMZ HTTP page loads</div>
+                      <div class="evidence-caption"><strong>Preparing with purpose</strong>
+                <p>Packing Ramadan Iftar packs for hostel-resident students as part of the ULTRAS initiative.</p></div>
                     </div>
                     <div class="evidence-item">
                       <img src="images/2021_ultras(2).jpg" class="evidence-thumb" alt="Outside to Inside blocked" onclick="openLightbox(this)" />
-                      <div class="evidence-caption"><strong>Test 6</strong> — Outside → Inside blocked</div>
+                      <div class="evidence-caption"><strong>Delivering the effort</strong>
+                <p>Distributing Iftar packs to students — the result of weeks of budgeting and coordination.</p></div>
                     </div>
                    
 		</div>
@@ -1864,9 +1910,10 @@ aaa authentication ssh console LOCAL
               <div class="tl-item-desc">My third secretary role probably confirmed that I had become comfortable working with documentation and coordination. However, this was also one of my first experiences working within an extremely tight timeline.</div>
 	      <div class="tl-item-subhead">// Key Contributions</div>
 	      <ul class="tl-item-list">
-  	        <li>Prepared official election documents, meeting minutes, event scripts, and programme flow materials.</li>
-  	        <li>Assisted in coordinating election logistics, announcements, and communication with university management.</li>
  		<li>Supported the execution of a three-week election timeline involving candidate registration, manifesto preparation, and voting arrangements.</li>
+  	        <li>Drafted and maintained official documents, including proposals, meeting minutes, and reports, ensuring accurate record-keeping throughout the election process.</li>
+  	        <li>Assisted in coordinating logistics for the student election, including scheduling, announcements, and communication with university management.</li>
+ 		<li>Prepared Emcee scripts and event program flow to support smooth delivery of ceremonies and events.</li>
 	      </ul>
 		</div>
             </div>
@@ -1898,7 +1945,7 @@ aaa authentication ssh console LOCAL
                   <div class="evidence-gallery">
                     <div class="evidence-item">
                       <img src="images/2022_leaders(1).png" class="evidence-thumb" alt="Leadership Club committee activity" onclick="openLightbox(this)" />
-                      <div class="evidence-caption">Leadership Club committee</div>
+                      <div class="evidence-caption">Leadership Club committee appointment</div>
                     </div>
                     <div class="evidence-item">
                       <img src="images/2022_leaders(2).jpg" class="evidence-thumb" alt="Leadership Club committee activity" onclick="openLightbox(this)" />
@@ -1916,7 +1963,7 @@ aaa authentication ssh console LOCAL
 	      <div class="tl-item-subhead">// Key Contributions</div>
 	      <ul class="tl-item-list">
   	        <li>Collaborated with Green Ribbon Group Malaysia to organise a mental health initiative involving UniKL BMI, MIDI, and MIAT.</li>
-  	        <li>Formed and led a 10-member committee throughout project planning and execution.</li>
+  	        <li>Formed and led a committee consisting of 10 members and navigated programme planning for a two-day event.</li>
  		<li>Managed project timelines, stakeholder communication, KPI tracking, and programme coordination.</li>
 	        <li>Successfully delivered a two-day programme that resulted in 30+ participants becoming certified Mental Health Ambassadors.</li>
 	      </ul>
@@ -1926,12 +1973,8 @@ aaa authentication ssh console LOCAL
                       <div class="evidence-caption">GREAT programme</div>
                     </div>
                     <div class="evidence-item">
-                      <img src="images/2022_great(2).jfif" class="evidence-thumb" alt="GREAT programme activity" onclick="openLightbox(this)" />
-                      <div class="evidence-caption">GREAT programme</div>
-                    </div>
-                    <div class="evidence-item">
-                      <img src="images/2022_great(3).jpg" class="evidence-thumb" alt="GREAT programme activity" onclick="openLightbox(this)" />
-                      <div class="evidence-caption">GREAT programme</div>
+                      <img src="images/2022_great(2).jfif" class="evidence-thumb" alt="GREAT Project Certificate" onclick="openLightbox(this)" />
+                      <div class="evidence-caption">GREAT Project Certificate</div>
                     </div>
                   </div>
             </div>
@@ -1959,9 +2002,9 @@ aaa authentication ssh console LOCAL
               <div class="tl-item-desc">After several secretary roles, I became very familiar with the responsibilities behind successful events. However, WOW presented a different challenge as it involved welcoming hundreds of new students into university life.</div>
 	      <div class="tl-item-subhead">// Key Contributions</div>
 	      <ul class="tl-item-list">
-  	        <li>Managed documentation, reports, meeting minutes, finance records, presentation materials, and event scripts.</li>
+  	        <li>Performed secretarial tasks including drafting paperwork, reports, letters, meeting minutes, presentation materials, and finance management.</li>
   	        <li>Supported programme coordination for a five-day orientation programme involving 200–300+ new students.</li>
- 		<li>Assisted committee members in maintaining smooth programme flow and responding to operational changes during event execution.</li>
+ 		<li>Served as an Event Scriptwriter, preparing Emcee scripts and program flow for various ceremonies.</li>
 	      </ul>
                   <div class="evidence-gallery">
                     <div class="evidence-item">
@@ -2037,16 +2080,14 @@ aaa authentication ssh console LOCAL
 	      </ul>
                   <div class="evidence-gallery">
                     <div class="evidence-item">
-                      <img src="images/2023_wow(4).jpg" class="evidence-thumb" alt="Inside to DMZ HTTP success" onclick="openLightbox(this)" />
-                      <div class="evidence-caption"><strong>Test 4</strong> — Inside → DMZ HTTP page loads</div>
+                      <img src="images/2023_wow(4).jpg" class="evidence-thumb" alt="Pre-WOW Energy!" onclick="openLightbox(this)" />
+                      <div class="evidence-caption"><strong>Before the spotlight, there was preparation</strong> 
+			<p>WOW Crew preparation session before a five-day orientation programme. Building teamwork before the big week.</p></div>
                     </div>
                     <div class="evidence-item">
-                      <img src="images/2023_wow(5).jpg" class="evidence-thumb" alt="Outside to Inside blocked" onclick="openLightbox(this)" />
-                      <div class="evidence-caption"><strong>Test 6</strong> — Outside → Inside blocked</div>
-                    </div>
-                    <div class="evidence-item">
-                      <img src="images/2023_wow(6).jpg" class="evidence-thumb" alt="Unauthorised SSH blocked" onclick="openLightbox(this)" />
-                      <div class="evidence-caption"><strong>Test 9</strong> — SSH blocked for unauthorised host</div>
+                      <img src="images/2023_wow(6).jpg" class="evidence-thumb" alt="A wrap on Orientation Week!" onclick="openLightbox(this)" />
+                      <div class="evidence-caption"><strong>The final chapter of WOW</strong> 
+			<p>After days of preparation and teamwork, seeing the new intake come together was a reminder of the impact behind every successful programme.</p></div>
                     </div>
                  
             </div>
@@ -2055,85 +2096,8 @@ aaa authentication ssh console LOCAL
         </div>
       </div>
 
-      <!-- ══ 2024 ══ -->
-      <div class="tl-year-block" data-tl>
-        <div class="tl-year-label">
-          <div class="tl-dot"></div>
-          <div>
-            <div class="tl-year">2024</div>
-            <div class="tl-year-sub">// From Behind the Scenes to Centre Stage 🌟</div>
-          </div>
-        </div>
-        <div class="tl-items">
-          <div class="tl-item" data-tl-item>
-            <div class="tl-item-icon">🎤</div>
-            <div class="tl-item-body">
-              <div class="tl-item-title">MJII x BMI Explorace</div>
-              <div class="tl-item-role">Volunteer</div>
-              <div class="tl-item-desc">A year after joining WOW as a secretary, I returned as the Deputy Head—this time responsible for helping lead the team that first taught me the fundamentals of event management.</div>
-	      <div class="tl-item-subhead">// Key Contributions</div>
-	      <ul class="tl-item-list">
-  	        <li>Worked together with the Head Committee to lead a 25-member organising team for a five-day orientation programme.</li>
-  	        <li>Coordinated committee operations and ensured smooth execution of activities throughout the event.</li>
- 		<li>Guided team members in carrying out their responsibilities and resolving operational challenges.</li>
-		<li>Hosted formal ceremonies attended by 100+ participants, including university deans and deputy deans.</li>
-	      </ul>
-                  <div class="evidence-gallery">
-                    <div class="evidence-item">
-                      <img src="images/2024_telecom(1).jpg" class="evidence-thumb" alt="Inside to DMZ HTTP success" onclick="openLightbox(this)" />
-                      <div class="evidence-caption"><strong>Test 4</strong> — Inside → DMZ HTTP page loads</div>
-                    </div>
-                    <div class="evidence-item">
-                      <img src="images/2024_telecom(2).jpg" class="evidence-thumb" alt="Outside to Inside blocked" onclick="openLightbox(this)" />
-                      <div class="evidence-caption"><strong>Test 6</strong> — Outside → Inside blocked</div>
-                    </div>
-                   
-            </div>
-           </div>
-          </div>
-        </div>
-      </div>
+      
 
-      <!-- ══ 2025 ══ -->
-      <div class="tl-year-block" data-tl>
-        <div class="tl-year-label">
-          <div class="tl-dot"></div>
-          <div>
-            <div class="tl-year">2025</div>
-            <div class="tl-year-sub">// From Behind the Scenes to Centre Stage 🌟</div>
-          </div>
-        </div>
-        <div class="tl-items">
-          <div class="tl-item" data-tl-item>
-            <div class="tl-item-icon">📡</div>
-            <div class="tl-item-body">
-              <div class="tl-item-title">Advancing Uplink Connectivity for Rural Community Development</div>
-              <div class="tl-item-role">Telekom Malaysia Research &amp; Development</div>
-              <div class="tl-item-desc">A year after joining WOW as a secretary, I returned as the Deputy Head—this time responsible for helping lead the team that first taught me the fundamentals of event management.</div>
-	      <div class="tl-item-subhead">// Key Contributions</div>
-	      <ul class="tl-item-list">
-  	        <li>Worked together with the Head Committee to lead a 25-member organising team for a five-day orientation programme.</li>
-  	        <li>Coordinated committee operations and ensured smooth execution of activities throughout the event.</li>
- 		<li>Guided team members in carrying out their responsibilities and resolving operational challenges.</li>
-		<li>Hosted formal ceremonies attended by 100+ participants, including university deans and deputy deans.</li>
-	      </ul>
-                  <div class="evidence-gallery">
-                    <div class="evidence-item">
-                      <img src="images/2025_tm(1).jfif" class="evidence-thumb" alt="Inside to DMZ HTTP success" onclick="openLightbox(this)" />
-                      <div class="evidence-caption"><strong>Test 4</strong> — Inside → DMZ HTTP page loads</div>
-                    </div>
-                    <div class="evidence-item">
-                      <img src="images/2025_tm(2).jfif" class="evidence-thumb" alt="Outside to Inside blocked" onclick="openLightbox(this)" />
-                      <div class="evidence-caption"><strong>Test 6</strong> — Outside → Inside blocked</div>
-                    </div>
-                    <div class="evidence-item">
-                      <img src="images/2025_tm(3).jfif" class="evidence-thumb" alt="Unauthorised SSH blocked" onclick="openLightbox(this)" />
-                      <div class="evidence-caption"><strong>Test 9</strong> — SSH blocked for unauthorised host</div>
-                    </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
     </div><!-- /timeline -->
   </section>
@@ -2142,7 +2106,7 @@ aaa authentication ssh console LOCAL
 <!-- ─── CONTACT ─── -->
 <div class="page">
   <section id="contact">
-    <div class="section-label">// Get In Touch</div>
+    <div class="section-label">// Let's Get In Touch :)</div>
     <h2 class="section-title">Contact</h2>
     <p class="section-sub">Feel free to reach out — I'm always happy to talk networking, security, or opportunities.</p>
 
@@ -2181,7 +2145,9 @@ aaa authentication ssh console LOCAL
   function openLightbox(imgEl) {
     const lb = document.getElementById('lightbox');
     document.getElementById('lightbox-img').src = imgEl.src;
-    document.getElementById('lightbox-caption').textContent = imgEl.alt || '';
+    const captionEl = imgEl.nextElementSibling;
+    const hasCaption = captionEl && captionEl.classList.contains('evidence-caption');
+    document.getElementById('lightbox-caption').innerHTML = hasCaption ? captionEl.innerHTML : (imgEl.alt || '');
     lb.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
