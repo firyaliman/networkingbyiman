@@ -977,7 +977,9 @@
       <div class="lg-item"><span class="lg-dot" style="background:var(--accent2)"></span> Routing</div>
       <div class="lg-item"><span class="lg-dot" style="background:#f87171"></span> Security</div>
       <div class="lg-item"><span class="lg-dot" style="background:var(--warn)"></span> Tools &amp; Platforms</div>
+      <!-- Traffic Analysis category hidden until a project is ready — uncomment to bring back
       <div class="lg-item"><span class="lg-dot" style="background:var(--success)"></span> Analysis</div>
+      -->
     </div>
 
     <!-- mobile pill tabs (visible only on small screens) -->
@@ -1245,16 +1247,19 @@ Core-MLS-1(config-router)#network 10.99.99.0 0.0.0.255 area 0
                     <table class="data-table">
                       <thead><tr><th>#</th><th>Verification Test</th><th>Result</th><th>Proof</th></tr></thead>
                       <tbody>
-                        <tr><td>1</td><td>HSRP gateway redundancy verification across VLANs</td><td><span class="status-pill ok">✓ Active/standby roles confirmed</span></td>
-			<td><img src="images/proof-test1.png" class="proof-thumb" alt="HSRP gateway redundancy verification" onclick="openLightbox(this)" /> <img src="images/proof-test1.png" class="proof-thumb" alt="HSRP gateway redundancy verification" onclick="openLightbox(this)" /></td></tr>
-                        <tr><td>2</td><td>HSRP failover simulation by disabling active gateway</td><td><span class="status-pill ok">✓ Traffic recovered through standby gateway</span></td><td><img src="images/proof-test2.png" class="proof-thumb" alt="HSRP failover simulation" onclick="openLightbox(this)" /></td></tr>
-                        <tr><td>3</td><td>STP root bridge election verification</td><td><span class="status-pill ok">✓ Root bridge placement matches design</span></td><td><img src="images/proof-test3.png" class="proof-thumb" alt="STP root bridge election verification" onclick="openLightbox(this)" /></td></tr>
-                        <tr><td>4</td><td>EtherChannel redundancy test by disabling member link</td><td><span class="status-pill ok">✓ Port-channel maintained connectivity</span></td><td><img src="images/proof-test4.png" class="proof-thumb" alt="EtherChannel redundancy test" onclick="openLightbox(this)" /></td></tr>
-                        <tr><td>5</td><td>VLAN segmentation and inter-VLAN communication testing</td><td><span class="status-pill ok">✓ Expected traffic permitted</span></td><td><img src="images/proof-test5.png" class="proof-thumb" alt="VLAN segmentation test" onclick="openLightbox(this)" /></td></tr>
-                        <tr><td>6</td><td>Voice VLAN verification</td><td><span class="status-pill ok">✓ Voice and data traffic separated</span></td><td><img src="images/proof-test6.png" class="proof-thumb" alt="Voice VLAN verification" onclick="openLightbox(this)" /></td></tr>
+                        <tr><td>1</td><td>Verify HSRP active/standby roles for user VLANs</td><td><span class="status-pill ok">✓ Active/standby gateway roles confirmed across Core-MLS-1 and Core-MLS-2</span></td><td><img src="images/proof-test1.png" class="proof-thumb" alt="HSRP active/standby roles verification" onclick="openLightbox(this)" /></td></tr>
+                        <tr><td>2</td><td>Simulate HSRP gateway failure by shutting down active VLAN interface/uplink</td><td><span class="status-pill ok">✓ Standby core assumed active role and maintained user connectivity</span></td><td><img src="images/proof-test2.png" class="proof-thumb" alt="HSRP gateway failure simulation" onclick="openLightbox(this)" /></td></tr>
+                        <tr><td>3</td><td>Verify RSTP root bridge placement per VLAN</td><td><span class="status-pill ok">✓ Root bridge distribution matched the designed topology</span></td><td><img src="images/proof-test3.png" class="proof-thumb" alt="RSTP root bridge placement verification" onclick="openLightbox(this)" /></td></tr>
+                        <tr><td>4</td><td>Simulate access switch uplink failure (Access Switch → Core link)</td><td><span class="status-pill ok">✓ RSTP reconverged and traffic continued through redundant uplink</span></td><td><img src="images/proof-test4.png" class="proof-thumb" alt="Access switch uplink failure simulation" onclick="openLightbox(this)" /></td></tr>
+                        <tr><td>5</td><td>Verify LACP EtherChannel between core switches</td><td><span class="status-pill ok">✓ Port-channel operational with bundled links</span></td><td><img src="images/proof-test5.png" class="proof-thumb" alt="LACP EtherChannel verification" onclick="openLightbox(this)" /></td></tr>
+                        <tr><td>6</td><td>Simulate EtherChannel member link failure</td><td><span class="status-pill ok">✓ Remaining physical link maintained Port-channel operation</span></td><td><img src="images/proof-test6.png" class="proof-thumb" alt="EtherChannel member link failure simulation" onclick="openLightbox(this)" /></td></tr>
+                        <tr><td>7</td><td>Verify VLAN segmentation and inter-VLAN routing</td><td><span class="status-pill ok">✓ User VLANs successfully communicated through Layer 3 gateways</span></td><td><img src="images/proof-test7.png" class="proof-thumb" alt="VLAN segmentation and inter-VLAN routing verification" onclick="openLightbox(this)" /></td></tr>
+                        <tr><td>8</td><td>Verify Voice VLAN configuration</td><td><span class="status-pill ok">✓ Voice and data traffic separated using dedicated VLANs</span></td><td><img src="images/proof-test8.png" class="proof-thumb" alt="Voice VLAN configuration verification" onclick="openLightbox(this)" /></td></tr>
+                        <tr><td>9</td><td>Verify switch management access</td><td><span class="status-pill ok">✓ Authorised management access through SSH successful</span></td><td><img src="images/proof-test9.png" class="proof-thumb" alt="Switch management access verification" onclick="openLightbox(this)" /></td></tr>
                       </tbody>
                     </table>
                   </div>
+
                 </div>
               </div>
             </div>
@@ -1710,7 +1715,7 @@ aaa authentication ssh console LOCAL
                       <thead><tr><th>#</th><th>Test</th><th>Result</th><th>Proof</th></tr></thead>
                       <tbody>
                         <tr><td>1</td><td>Internal HR PC → Internal IT PC</td><td><span class="status-pill ok">✓ Allowed</span></td><td><img src="proj3_image/proj3-proof1.png" class="proof-thumb" alt="Internal HR to Internal IT test" onclick="openLightbox(this)" /></td></tr>
-                        <tr><td>2</td><td>Internal HR PC → DMZ HTTP Server (172.16.50.2)</td><td><span class="status-pill ok">✓ Page loads</span></td><td><img src="proj3_image/proj3-proof2.png" class="proof-thumb" alt="Inside to DMZ HTTP success" onclick="openLightbox(this)" /></td></tr>
+                        <tr><td>2</td><td>Internal HR PC → DMZ HTTP Server (172.16.50.2)</td><td><span class="status-pill ok">✓ Page loads</span></td><td><img src="proj3_image/proj3-proof2" class="proof-thumb" alt="Inside to DMZ HTTP success" onclick="openLightbox(this)" /></td></tr>
                         <tr><td>3</td><td>External HR PC → DMZ HTTP Server (172.16.50.2)</td><td><span class="status-pill ok">✓ Page loads</span></td><td><img src="proj3_image/proj3-proof3.png" class="proof-thumb" alt="External HR to DMZ HTTP test" onclick="openLightbox(this)" /></td></tr>
                         <tr><td>4</td><td>External HR PC → Internal HR PC (192.168.10.2)</td><td><span class="status-pill fail">✗ Blocked</span></td><td><img src="proj3_image/proj3-proof4.png" class="proof-thumb" alt="Outside to Inside blocked" onclick="openLightbox(this)" /></td></tr>
                         <tr><td>5</td><td>DMZ HTTP Server → Internal HR PC (192.168.10.2)</td><td><span class="status-pill fail">✗ Blocked</span></td><td><img src="proj3_image/proj3-proof5.png" class="proof-thumb" alt="DMZ to Internal HR blocked test" onclick="openLightbox(this)" /></td></tr>
