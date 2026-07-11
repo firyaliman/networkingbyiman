@@ -123,6 +123,10 @@
     }
     .nav-links a:hover { color: var(--text); }
 
+    /* mobile hamburger + dropdown (hidden on desktop) */
+    .nav-burger { display: none; }
+    .nav-links-mobile { display: none; }
+
     /* ─── Layout ─── */
     .page { max-width: 1100px; margin: auto; padding: 0 24px; }
 
@@ -678,6 +682,11 @@
       transition: border-color var(--transition), opacity var(--transition);
     }
     .proof-thumb:hover { border-color: var(--accent); opacity: 0.9; }
+    .proof-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
 
     /* ─── Screenshot gallery (evidence thumbnails) ─── */
     .evidence-gallery {
@@ -967,10 +976,74 @@
       .about-grid { grid-template-columns: 1fr; }
       .nav-links { display: none; }
 
+      /* hamburger button */
+      .nav-burger {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+        width: 32px;
+        height: 32px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+      }
+      .nav-burger span {
+        display: block;
+        width: 100%;
+        height: 2px;
+        background: var(--text);
+        border-radius: 2px;
+        transition: transform var(--transition), opacity var(--transition);
+      }
+      .nav-burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+      .nav-burger.open span:nth-child(2) { opacity: 0; }
+      .nav-burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+      /* dropdown menu */
+      .nav-links-mobile {
+        list-style: none;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        background: var(--bg);
+        border-top: 1px solid transparent;
+      }
+      .nav-links-mobile.open {
+        max-height: 300px;
+        border-top: 1px solid var(--border);
+      }
+      .nav-links-mobile li { border-bottom: 1px solid var(--border); }
+      .nav-links-mobile a {
+        display: block;
+        padding: 14px 24px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .nav-links-mobile a:active { color: var(--accent); }
+
       /* Projects: hide sidebar, show pill tabs */
       .projects-layout { grid-template-columns: 1fr; }
       .cat-sidebar { display: none; }
       .cat-pill-tabs { display: flex; }
+
+      /* lightbox caption: allow wrapping instead of overflowing off-screen */
+      #lightbox-caption {
+        white-space: normal;
+        max-width: 88vw;
+        text-align: center;
+        font-size: 11px;
+      }
+
+      /* tighten card padding a bit so content isn't cramped edge-to-edge */
+      .project-header { padding: 16px 18px; }
+      .tab-content { padding: 22px 18px; }
+      .tab-bar { padding: 0 18px; }
+      .tl-item { padding: 14px 16px; }
+      .cert-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -994,7 +1067,17 @@
       <li><a href="#involvements">Involvements</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
+    <button class="nav-burger" id="nav-burger" onclick="toggleMobileNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
+  <ul class="nav-links-mobile" id="nav-links-mobile">
+    <li><a href="#about" onclick="closeMobileNav()">About</a></li>
+    <li><a href="#projects" onclick="closeMobileNav()">Projects</a></li>
+    <li><a href="#certifications" onclick="closeMobileNav()">Certifications</a></li>
+    <li><a href="#involvements" onclick="closeMobileNav()">Involvements</a></li>
+    <li><a href="#contact" onclick="closeMobileNav()">Contact</a></li>
+  </ul>
 </nav>
 
 <!-- ─── HERO ─── -->
@@ -1304,15 +1387,26 @@ Core-MLS-1(config-router)#network 10.99.99.0 0.0.0.255 area 0
                     <table class="data-table">
                       <thead><tr><th>#</th><th>Verification Test</th><th>Result</th><th>Proof</th></tr></thead>
                       <tbody>
-                        <tr><td>1</td><td>Verify HSRP active/standby roles for user VLANs</td><td><span class="status-pill ok">✓ Active/standby gateway roles confirmed across Core-MLS-1 and Core-MLS-2</span></td><td><img src="images/proof-test1.png" class="proof-thumb" alt="HSRP active/standby roles verification" onclick="openLightbox(this)" /></td></tr>
-                        <tr><td>2</td><td>Simulate HSRP gateway failure by shutting down active VLAN interface/uplink</td><td><span class="status-pill ok">✓ Standby core assumed active role and maintained user connectivity</span></td><td><img src="images/proof-test2.png" class="proof-thumb" alt="HSRP gateway failure simulation" onclick="openLightbox(this)" /></td></tr>
-                        <tr><td>3</td><td>Verify RSTP root bridge placement per VLAN</td><td><span class="status-pill ok">✓ Root bridge distribution matched the designed topology</span></td><td><img src="images/proof-test3.png" class="proof-thumb" alt="RSTP root bridge placement verification" onclick="openLightbox(this)" /></td></tr>
-                        <tr><td>4</td><td>Simulate access switch uplink failure (Access Switch → Core link)</td><td><span class="status-pill ok">✓ RSTP reconverged and traffic continued through redundant uplink</span></td><td><img src="images/proof-test4.png" class="proof-thumb" alt="Access switch uplink failure simulation" onclick="openLightbox(this)" /></td></tr>
-                        <tr><td>5</td><td>Verify LACP EtherChannel between core switches</td><td><span class="status-pill ok">✓ Port-channel operational with bundled links</span></td><td><img src="images/proof-test5.png" class="proof-thumb" alt="LACP EtherChannel verification" onclick="openLightbox(this)" /></td></tr>
-                        <tr><td>6</td><td>Simulate EtherChannel member link failure</td><td><span class="status-pill ok">✓ Remaining physical link maintained Port-channel operation</span></td><td><img src="images/proof-test6.png" class="proof-thumb" alt="EtherChannel member link failure simulation" onclick="openLightbox(this)" /></td></tr>
-                        <tr><td>7</td><td>Verify VLAN segmentation and inter-VLAN routing</td><td><span class="status-pill ok">✓ User VLANs successfully communicated through Layer 3 gateways</span></td><td><img src="images/proof-test7.png" class="proof-thumb" alt="VLAN segmentation and inter-VLAN routing verification" onclick="openLightbox(this)" /></td></tr>
-                        <tr><td>8</td><td>Verify Voice VLAN configuration</td><td><span class="status-pill ok">✓ Voice and data traffic separated using dedicated VLANs</span></td><td><img src="images/proof-test8.png" class="proof-thumb" alt="Voice VLAN configuration verification" onclick="openLightbox(this)" /></td></tr>
-                        <tr><td>9</td><td>Verify switch management access</td><td><span class="status-pill ok">✓ Authorised management access through SSH successful</span></td><td><img src="images/proof-test9.png" class="proof-thumb" alt="Switch management access verification" onclick="openLightbox(this)" /></td></tr>
+                        <tr><td>1</td><td>HSRP active/standby roles for user VLANs</td><td><span class="status-pill ok">✓ Active/standby gateway roles confirmed across Core-MLS-1 and Core-MLS-2</span></td><td><img src="proj1_image/proj1-test1.png" class="proof-thumb" alt="HSRP active/standby roles verification" onclick="openLightbox(this)" /></td></tr>
+                        <tr><td>2</td><td>HSRP gateway failure by shutting down active VLAN interface</td><td><span class="status-pill ok">✓ Standby core assumed active role and maintained user connectivity</span></td><td>
+                        <div class="proof-group">
+                            <img src="proj1_image/proj1-test2a.png" class="proof-thumb" alt="Shutting down VLAN 20 to test HSRP gateway failure simulation" onclick="openLightbox(this)" />
+                            <img src="proj1_image/proj1-test2b.png" class="proof-thumb" alt="..." onclick="openLightbox(this)" />
+                          </div>
+                          </td></tr>
+                        <tr><td>3</td><td>RSTP root bridge placement per VLAN</td><td><span class="status-pill ok">✓ Root bridge distribution matched the designed topology</span></td><td>
+                        <div class="proof-group">
+                            <img src="proj1_image/proj1-test3a.png" class="proof-thumb" alt="RSTP root bridge placement verification" onclick="openLightbox(this)" />
+                            <img src="proj1_image/proj1-test3b.png" class="proof-thumb" alt="..." onclick="openLightbox(this)" />
+                          </div></td></tr>
+                        <tr><td>4</td><td>ACP EtherChannel between core switches</td><td><span class="status-pill ok">✓ Port-channel operational with bundled links</span></td><td><img src="proj1_image/proj1-test4.png" class="proof-thumb" alt="LACP EtherChannel verification" onclick="openLightbox(this)" /></td></tr>
+                        <tr><td>5</td><td>EtherChannel member link failure</td><td><span class="status-pill ok">✓ Remaining physical link maintained Port-channel operation</span></td><td><img src="proj1_image/proj1-test5.png" class="proof-thumb" alt="EtherChannel member link failure simulation" onclick="openLightbox(this)" /></td></tr>
+                        <tr><td>6</td><td>VLAN segmentation and inter-VLAN routing</td><td><span class="status-pill ok">✓ User VLANs successfully communicated through Layer 3 gateways</span></td><td>
+                        <div class="proof-group">
+                            <img src="proj1_image/proj1-test6a.png" class="proof-thumb" alt="VLAN segmentation and inter-VLAN routing verification" onclick="openLightbox(this)" />
+                            <img src="proj1_image/proj1-test6b.png" class="proof-thumb" alt="..." onclick="openLightbox(this)" />
+                          </div></td></tr>
+                        <tr><td>7</td><td>Voice VLAN configuration</td><td><span class="status-pill ok">✓ Voice and data traffic separated using dedicated VLANs</span></td><td><img src="proj1_image/proj1-test7.png" class="proof-thumb" alt="Voice VLAN configuration verification" onclick="openLightbox(this)" /></td></tr>
                       </tbody>
                     </table>
                   </div>
@@ -2235,6 +2329,16 @@ aaa authentication ssh console LOCAL
 </footer>
 
 <script>
+  // ─── Mobile nav ───
+  function toggleMobileNav() {
+    document.getElementById('nav-burger').classList.toggle('open');
+    document.getElementById('nav-links-mobile').classList.toggle('open');
+  }
+  function closeMobileNav() {
+    document.getElementById('nav-burger').classList.remove('open');
+    document.getElementById('nav-links-mobile').classList.remove('open');
+  }
+
   // ─── Lightbox ───
   function openLightbox(imgEl) {
     const lb = document.getElementById('lightbox');
