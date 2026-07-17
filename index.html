@@ -1099,8 +1099,9 @@
       <p>I'm currently open to entry-level opportunities in:</p>
       <div class="hero-tags">
         <span class="tag role">Network Engineering</span>
-        <span class="tag role">Network Security</span>
         <span class="tag role">NOC</span>
+        <span class="tag role">Network Security</span>
+        <span class="tag role">Infra Network Engineering</span>
       </div>
     </div>
   </section>
@@ -1480,14 +1481,28 @@ Core-MLS-1(config-router)#network 10.99.99.0 0.0.0.255 area 0
 
 
                 <div class="content-block">
-                  <h4>WAN Links (Site ↔ ISP)</h4>
+                  <h4>WAN Links (Edge ↔ ISP)</h4>
                   <div class="data-table-wrap">
                     <table class="data-table">
-                      <thead><tr><th>Link</th><th>Subnet</th><th>Router A IP</th><th>Router B IP</th></tr></thead>
+                      <thead><tr><th>Link</th><th>Subnet</th><th>Edge Router IP</th><th>ISP IP</th></tr></thead>
                       <tbody>
-                        <tr><td>PNG_BR ↔ ISP</td><td>10.0.12.0/30</td><td>PNG_BR: 10.0.12.1</td><td>ISP: 10.0.12.2</td></tr>
-                        <tr><td>HQ_BR ↔ ISP</td><td>10.0.13.0/30</td><td>HQ_BR: 10.0.13.1</td><td>ISP: 10.0.13.2</td></tr>
-                        <tr><td>JHR_BR ↔ ISP</td><td>10.0.14.0/30</td><td>JHR_BR: 10.0.14.1</td><td>ISP: 10.0.14.2</td></tr>
+                        <tr><td>PNG_Edge ↔ ISP</td><td>10.0.12.0/30</td><td>PNG_Edge: 10.0.12.1</td><td>ISP: 10.0.12.2</td></tr>
+                        <tr><td>HQ_Edge ↔ ISP</td><td>10.0.13.0/30</td><td>HQ_Edge: 10.0.13.1</td><td>ISP: 10.0.13.2</td></tr>
+                        <tr><td>JHR_Edge ↔ ISP</td><td>10.0.14.0/30</td><td>JHR_Edge: 10.0.14.1</td><td>ISP: 10.0.14.2</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div class="content-block">
+                  <h4>Edge ↔ Core Links (per site)</h4>
+                  <div class="data-table-wrap">
+                    <table class="data-table">
+                      <thead><tr><th>Link</th><th>Subnet</th><th>Edge IP</th><th>Core IP</th></tr></thead>
+                      <tbody>
+                        <tr><td>PNG_Edge ↔ PNG_Core</td><td>10.255.12.0/30</td><td>10.255.12.2</td><td>10.255.12.1</td></tr>
+                        <tr><td>HQ_Edge ↔ HQ_Core</td><td>10.255.13.0/30</td><td>10.255.13.2</td><td>10.255.13.1</td></tr>
+                        <tr><td>JHR_Edge ↔ JHR_Core</td><td>10.255.14.0/30</td><td>10.255.14.2</td><td>10.255.14.1</td></tr>
                       </tbody>
                     </table>
                   </div>
@@ -1553,47 +1568,12 @@ Core-MLS-1(config-router)#network 10.99.99.0 0.0.0.255 area 0
                 </div>
 
                 <div class="content-block">
-                  <h4>Branch Router — Sub-interfaces (Penang example)</h4>
+                  <h4>Access Switch — VLANs, Trunk &amp; Port Security (Penang example)</h4>
                   <div class="code-block">
-<span class="kw">interface</span> g0/1.10
- encapsulation dot1Q 10
- ip address 172.16.10.1 255.255.255.0
- ip helper-address 192.168.30.100
-<span class="cm">!</span>
-<span class="kw">interface</span> g0/1.20
- encapsulation dot1Q 20
- ip address 172.16.20.1 255.255.255.0
- ip helper-address 192.168.30.100
-<span class="cm">!</span>
-<span class="kw">interface</span> g0/1.99
- encapsulation dot1Q 99
- ip address 172.16.99.1 255.255.255.0
-                  </div>
-                </div>
-
-                <div class="content-block">
-                  <h4>Branch Router — OSPF + eBGP + Redistribution (Penang, AS 65001)</h4>
-                  <div class="code-block">
-<span class="kw">router ospf</span> 1
- router-id 2.2.2.2
- network 172.16.10.0 0.0.0.255 area 0
- network 172.16.20.0 0.0.0.255 area 0
- network 172.16.99.0 0.0.0.255 area 0
- redistribute bgp 65001 subnets
-<span class="cm">!</span>
-<span class="kw">router bgp</span> 65001
- bgp router-id 2.2.2.2
- neighbor 10.0.12.2 remote-as 65000
- network 172.16.10.0 mask 255.255.255.0
- network 172.16.20.0 mask 255.255.255.0
- network 172.16.99.0 mask 255.255.255.0
- redistribute ospf 1
-                  </div>
-                </div>
-
-                <div class="content-block">
-                  <h4>Switch — VLAN 1 Hardening &amp; Port Security (applies to all 3 sites)</h4>
-                  <div class="code-block">
+<span class="kw">vlan</span> 10
+ name Users
+<span class="kw">vlan</span> 20
+ name Servers
 <span class="kw">vlan</span> 99
  name Black_Hole
 <span class="cm">!</span>
@@ -1606,10 +1586,6 @@ Core-MLS-1(config-router)#network 10.99.99.0 0.0.0.255 area 0
 <span class="kw">interface range</span> f0/1-10
  switchport mode access
  switchport access vlan 10
- switchport port-security
- switchport port-security maximum 2
- switchport port-security mac-address sticky
- switchport port-security violation shutdown
  spanning-tree portfast
 <span class="cm">!</span>
 <span class="cm">! Unused ports parked in the dead-end VLAN</span>
@@ -1618,8 +1594,53 @@ Core-MLS-1(config-router)#network 10.99.99.0 0.0.0.255 area 0
  switchport access vlan 99
  shutdown
                   </div>
+                  <p style="margin-top:10px; font-size:12.5px; color:var(--muted);">HQ_SW is identical except its trunk additionally allows VLAN 30 (<code>switchport trunk allowed vlan 10,20,30,99</code>) for the Mgmt VLAN.</p>
+                </div>
+
+                <div class="content-block">
+                  <h4>Edge Router — OSPF (Transit Link) + eBGP + Redistribution (Penang, AS 65001)</h4>
+                  <div class="code-block">
+<span class="kw">router ospf</span> 1
+ router-id 2.2.2.2
+ network 10.255.12.0 0.0.0.3 area 0
+ redistribute bgp 65001 metric 20 subnets
+<span class="cm">!</span>
+<span class="kw">router bgp</span> 65001
+ bgp router-id 2.2.2.2
+ neighbor 10.0.12.2 remote-as 65000
+ network 172.16.10.0 mask 255.255.255.0
+ network 172.16.20.0 mask 255.255.255.0
+ network 172.16.99.0 mask 255.255.255.0
+ redistribute ospf 1
+                  </div>
+                </div>
+
+                <div class="content-block">
+                  <h4>Core Switch — SVI Routing, DHCP Relay &amp; OSPF (Penang, PNG_Core)</h4>
+                  <div class="code-block">
+ip routing
+<span class="cm">!</span>
+<span class="kw">interface</span> vlan 10
+ ip address 172.16.10.1 255.255.255.0
+ ip helper-address 192.168.30.100
+<span class="cm">!</span>
+<span class="kw">interface</span> vlan 20
+ ip address 172.16.20.1 255.255.255.0
+ ip helper-address 192.168.30.100
+<span class="cm">!</span>
+<span class="kw">interface</span> vlan 99
+ ip address 172.16.99.1 255.255.255.0
+<span class="cm">!</span>
+<span class="kw">router ospf</span> 1
+ router-id 12.12.12.12
+ network 172.16.10.0 0.0.0.255 area 0
+ network 172.16.20.0 0.0.0.255 area 0
+ network 172.16.99.0 0.0.0.255 area 0
+ network 10.255.12.0 0.0.0.3 area 0
+                  </div>
                 </div>
               </div>
+
 
               <div class="tab-content" data-tab="output">
                 <div class="content-block">
@@ -1629,12 +1650,30 @@ Core-MLS-1(config-router)#network 10.99.99.0 0.0.0.255 area 0
                     <table class="data-table">
                       <thead><tr><th>#</th><th>Verification Test</th><th>Result</th><th>Proof</th></tr></thead>
                       <tbody>
-                        <tr><td>1</td><td>OSPF neighbour adjacency between enterprise routers</td><td><span class="status-pill ok">✓ FULL state established</span></td><td><img src="images/proj2-proof1.png" class="proof-thumb" alt="OSPF neighbour adjacency verification" onclick="openLightbox(this)" /></td></tr>
-                        <tr><td>2</td><td>eBGP peering between enterprise sites and ISP</td><td><span class="status-pill ok">✓ All BGP neighbours established</span></td><td><img src="images/proj2-proof2.png" class="proof-thumb" alt="eBGP peering verification" onclick="openLightbox(this)" /></td></tr>
-                        <tr><td>3</td><td>ISP BGP table verification</td><td><span class="status-pill ok">✓ All 3 enterprise AS routes learned</span></td><td><img src="images/proj2-proof3.png" class="proof-thumb" alt="ISP BGP table verification" onclick="openLightbox(this)" /></td></tr>
-                        <tr><td>4</td><td>OSPF-to-BGP redistribution</td><td><span class="status-pill ok">✓ Internal LAN routes advertised to ISP</span></td><td><img src="images/proj2-proof4.png" class="proof-thumb" alt="OSPF to BGP redistribution verification" onclick="openLightbox(this)" /></td></tr>
-                        <tr><td>5</td><td>BGP-to-OSPF redistribution</td><td><span class="status-pill ok">✓ Remote site routes installed as OSPF external routes</span></td><td><img src="images/proj2-proof5.png" class="proof-thumb" alt="BGP to OSPF redistribution verification" onclick="openLightbox(this)" /></td></tr>
-                        <tr><td>6</td><td>Inter-site connectivity (Penang PC → HQ Server, Johor PC → Penang Server)</td><td><span class="status-pill ok">✓ Successful communication</span></td><td><img src="images/proj2-proof6.png" class="proof-thumb" alt="Inter-site connectivity test" onclick="openLightbox(this)" /></td></tr>
+                        <tr><td>1</td><td>Verify OSPF-enabled interfaces</td><td><span class="status-pill ok">✓ All branch LAN interfaces participating in OSPF</span></td><td>
+                        <div class="proof-group">
+                            <img src="proj2_image/proj2-test1a.png" class="proof-thumb" alt="OSPF-enabled interfaces verification" onclick="openLightbox(this)" />
+                            <img src="proj2_image/proj2-test1b.png" class="proof-thumb" alt="..." onclick="openLightbox(this)" />
+                          </div>
+                          </td></tr>
+
+                        <tr><td>2</td><td>Verify eBGP peering with ISP</td><td><span class="status-pill ok">✓ All BGP neighbours established</span></td><td>
+                        <div class="proof-group">
+			    <img src="proj2_image/proj2-test2a.png" class="proof-thumb" alt="eBGP peering verification" onclick="openLightbox(this)" />
+                            <img src="proj2_image/proj2-test2b.png" class="proof-thumb" alt="..." onclick="openLightbox(this)" />
+                            <img src="proj2_image/proj2-test2c.png" class="proof-thumb" alt="..." onclick="openLightbox(this)" />
+                          </div>
+                          </td></tr>
+
+                        <tr><td>3</td><td>Verify ISP BGP routing table</td><td><span class="status-pill ok">✓ Routes learned from all enterprise sites</span></td><td><img src="proj2_image/proj2-test3a.png" class="proof-thumb" alt="ISP BGP routing table verification" onclick="openLightbox(this)" /></td></tr>
+                        <tr><td>4</td><td>Verify OSPF-to-BGP redistribution</td><td><span class="status-pill ok">✓ Branch LAN networks advertised into BGP</span></td><td><img src="proj2_image/proj2-test4a.png" class="proof-thumb" alt="OSPF to BGP redistribution verification" onclick="openLightbox(this)" /></td></tr>
+                        <tr><td>5</td><td>Verify BGP-to-OSPF redistribution</td><td><span class="status-pill ok">✓ Remote branch networks installed in routing table</span></td><td><img src="proj2_image/proj2-test5a.png" class="proof-thumb" alt="BGP to OSPF redistribution verification" onclick="openLightbox(this)" /></td></tr>
+                        <tr><td>6</td><td>Verify inter-site connectivity</td><td><span class="status-pill ok">✓ Successful communication between enterprise sites</span></td><td>
+                        <div class="proof-group">
+			    <img src="proj2_image/proj2-test6a.png" class="proof-thumb" alt="Inter-site connectivity verification" onclick="openLightbox(this)" />
+                            <img src="proj2_image/proj2-test6b.png" class="proof-thumb" alt="..." onclick="openLightbox(this)" />
+                          </div>
+                          </td></tr>
                       </tbody>
                     </table>
                   </div>
@@ -1644,6 +1683,7 @@ Core-MLS-1(config-router)#network 10.99.99.0 0.0.0.255 area 0
               </div>
             </div>
           </div><!-- /proj2 -->
+
 
 
 
@@ -2297,7 +2337,7 @@ aaa authentication ssh console LOCAL
   <section id="contact">
     <div class="section-label">// Let's Get In Touch :)</div>
     <h2 class="section-title">Contact</h2>
-    <p class="section-sub">Feel free to get in touch — I'm always happy to chat about networking, network security, or potential opportunities. Currently seeking entry-level opportunities as a Network Engineer, Network Security Engineer or NOC Engineer!</p>
+    <p class="section-sub">Feel free to get in touch — I'm always happy to chat about networking, network security, or potential opportunities. Currently seeking entry-level opportunities as a Network Engineer, Network Security Engineer, NOC Engineer or Infra Network Engineer!</p>
 
     <div class="contact-links" style="max-width:420px;">
       <a href="mailto:firyaliman@gmail.com" class="contact-link">
